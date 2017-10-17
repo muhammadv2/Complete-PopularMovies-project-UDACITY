@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mb_top_rated_sort"
+        android:icon="@drawable/top_rated_movies"
+        android:title="@string/top_rated"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/mb_most_popular_sort"
+        android:icon="@drawable/most_popular_movies"
+        android:title="@string/most_popular"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="poster_thumbnail">details_screen_poster_thumbnail</string>
+    <string name="tv_user_rating">User Rating</string>
+    <string name="title_activity_details_screen">DetailsScreen</string>
+    <string name="top_rated">Top rated movies</string>
+    <string name="most_popular">Most popular movies</string>
+    <string name="overview">Overview</string>
+    <string name="poster_image_description">poster_image</string>
+    <string name="most_popular_toast">The list sorted by most popular movies</string>
+    <string name="top_rated_toast">The list sorted by top rated movies</string>
+    <string name="internet_required">This app need Internet Connection</string>
+    <string name="release_date">Release date</string>
+</resources>
