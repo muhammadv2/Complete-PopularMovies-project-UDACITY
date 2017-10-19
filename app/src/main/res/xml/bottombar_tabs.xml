@@ -1,0 +1,16 @@
+<tabs>
+    <tab
+        icon="@drawable/ic_home_black_24dp"
+        id="@+id/most_popular_id"
+        title="@string/title_most_popular"
+        />
+    <tab
+        barColorWhenSelected="#5D4037"
+        icon="@drawable/ic_dashboard_black_24dp"
+        id="@+id/top_rated_id"
+        title="@string/title_top_rated" />
+    <tab
+        icon="@drawable/ic_notifications_black_24dp"
+        id="@+id/favorite_movies_id"
+        title="@string/title_favorite_movies" />
+</tabs>

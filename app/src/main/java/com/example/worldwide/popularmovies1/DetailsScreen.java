@@ -13,24 +13,24 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class DetailsScreen extends AppCompatActivity {
 
     private Intent intent;
 
-    @InjectView(R.id.tv_original_title)
+    @BindView(R.id.tv_original_title)
     TextView mOriginalTitle;
-    @InjectView(R.id.tv_user_rating)
+    @BindView(R.id.tv_user_rating)
     TextView mUserRating;
-    @InjectView(R.id.tv_overview)
+    @BindView(R.id.tv_overview)
     TextView mOverview;
-    @InjectView(R.id.tv_release_date)
+    @BindView(R.id.tv_release_date)
     TextView mReleaseDate;
-    @InjectView(R.id.ratingBar)
+    @BindView(R.id.ratingBar)
     RatingBar mRatingBar;
-    @InjectView(R.id.iv_details_activity_poster)
+    @BindView(R.id.iv_details_activity_poster)
     ImageView mMoviePoster;
 
     @Override
@@ -38,7 +38,7 @@ public class DetailsScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_details_screen);
 
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         intent = getIntent();
 

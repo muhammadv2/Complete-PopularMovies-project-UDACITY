@@ -13,8 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
@@ -91,7 +91,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         //our only view will be showing in the RecyclerView
-        @InjectView(R.id.iv_main_screen_poster)
+        @BindView(R.id.iv_main_screen_poster)
         ImageView mPosterImageView;
 
         //Constructor help finding our view and set up the view with onClickListener
@@ -100,7 +100,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             itemView.setOnClickListener(this);
 
             //inject butterKnife library to use the constructor to set it self
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
 
         //void method to help fetching the images from our passed url and setting it using the help of Picasso
