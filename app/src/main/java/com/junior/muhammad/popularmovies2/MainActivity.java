@@ -1,4 +1,4 @@
-package com.example.worldwide.popularmovies1;
+package com.junior.muhammad.popularmovies2;
 
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.rv_movies)
     RecyclerView recyclerView;
-
 
     private MoviesAdapter adapter;
 

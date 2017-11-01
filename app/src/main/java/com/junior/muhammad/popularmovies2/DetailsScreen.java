@@ -1,4 +1,4 @@
-package com.example.worldwide.popularmovies1;
+package com.junior.muhammad.popularmovies2;
 
 import android.content.Intent;
 import android.os.Bundle;
