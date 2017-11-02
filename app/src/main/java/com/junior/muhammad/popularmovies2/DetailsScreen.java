@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -13,7 +14,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.junior.muhammad.popularmovies2.data.MoviesContract;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -68,13 +68,18 @@ public class DetailsScreen extends AppCompatActivity {
                 Movie movie = intent.getParcelableExtra(Constants.MOVIE_OBJECT_TAG);
 
                 ContentValues cv = new ContentValues();
+                cv.put(MoviesContract.FavEntry.COLUMN_TITLE, movie.getTitle());
+                cv.put(MoviesContract.FavEntry.COLUMN_RATING, movie.getUserRating());
+                cv.put(MoviesContract.FavEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+                cv.put(MoviesContract.FavEntry.COLUMN_OVERVIEW, movie.getOverView());
+                cv.put(MoviesContract.FavEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
                 cv.put(MoviesContract.FavEntry.COLUMN_MOVIE_ID, movie.getMovieId());
-                cv.put(MoviesContract.FavEntry.COLUMN_TITLE, movie.getOriginalTitle());
 
                 mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
 
                 Uri insert = getContentResolver().insert(MoviesContract.FavEntry.CONTENT_URI, cv);
 
+                Log.d("weac", "onClick() called with: v = [" + insert + "]");
                 if (insert != null) {
                     getContentResolver().notifyChange(insert, null);
                 }
@@ -96,12 +101,12 @@ public class DetailsScreen extends AppCompatActivity {
 
         String date = movie.getReleaseDate();
 
-        mOriginalTitle.setText(movie.getOriginalTitle());
+        mOriginalTitle.setText(movie.getTitle());
         mUserRating.setText(rating);
         mRatingBar.setRating(fl / 2); //dividing the value of the rate to be the same ratio in 5 star rating bar
         mOverview.setText(movie.getOverView());
         mReleaseDate.setText(dateFormat(date));
-        bindImage(movie.getPosterPath());
+        ImageUtils.bindImage(this, movie.getPosterPath(), mMoviePoster);
 
         mRatingBar.setIsIndicator(true); // set the rating bar as indicator to prevent editing on it
 
@@ -128,18 +133,5 @@ public class DetailsScreen extends AppCompatActivity {
         return timeFormat.format(myDate);
     }
 
-    /**
-     * Using the help of picasso library to fetch our images
-     */
-    private void bindImage(String imgPath) {
 
-        String url = Constants.IMAGE_QUERY_URL + imgPath;
-
-        Picasso.with(this)
-                .load(url)
-                .placeholder(R.drawable.place_holder)
-                .error(R.drawable.error_loading_image)
-                .into(mMoviePoster);
-
-    }
 }

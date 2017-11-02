@@ -106,7 +106,7 @@ public final class NetworkUtils {
                 String posterPath = singleMovieObject.optString(Constants.POSTER_PATH_TAG);
                 String movieId = singleMovieObject.optString(Constants.MOVIE_ID);
 
-                Log.d("NetworkUtils", "handleJson() called with: response = [" + movieId + "]");
+                Log.d("NetworkUtils", "handleJson() called with: response = [" + posterPath + "]");
 
                 movies.add(new Movie(originalTitle, userRating, releaseDate, overview, posterPath, movieId));
 

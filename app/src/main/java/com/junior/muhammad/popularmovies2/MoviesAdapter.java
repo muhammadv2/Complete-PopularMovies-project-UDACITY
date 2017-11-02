@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import butterknife.BindView;
@@ -74,8 +72,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     public void onBindViewHolder(MoviesViewHolder holder, int position) {
 
         Movie movie = movies.get(position);
-        String imageUrl = Constants.IMAGE_QUERY_URL + movie.getPosterPath();
-        holder.bind(imageUrl);
+
+        ImageUtils.bindImage(mContext, movie.getPosterPath(), holder.mPosterImageView);
+
     }
 
 
@@ -102,15 +101,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
             //inject butterKnife library to use the constructor to set it self
             ButterKnife.bind(this, itemView);
-        }
-
-        //void method to help fetching the images from our passed url and setting it using the help of Picasso
-        void bind(String url) {
-            Picasso.with(mContext)
-                    .load(url)
-                    .placeholder(R.drawable.place_holder)
-                    .error(R.drawable.error_loading_image)
-                    .into(mPosterImageView);
         }
 
 

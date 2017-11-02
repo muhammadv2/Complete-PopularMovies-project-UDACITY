@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
                     return new FavoriteMoviesLoader(getApplicationContext());
 
                 }
@@ -68,36 +69,53 @@ public class MainActivity extends AppCompatActivity
 
                     Log.d(TAG, "onLoadFinished invoked");
 
-                    //check if the ArrayList not null and if it's not pass it to the adapter and show the data
-                    if (data == null) {
-                        return;
-                    }
-//                        ArrayList<Integer> list = new ArrayList<>();
-
-                    int idColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_MOVIE_ID);
-
-                    if (data.moveToNext()) {
-
-                        int id = data.getInt(idColumnIndex);
-
-//                            list.add(id);
-
-                        howToSort = String.valueOf(id);
-                        getSupportLoaderManager().restartLoader(Constants.MOVIES_LOADER, null, this);
-
-//                            howToSort = id;
-                        Log.d(TAG, "onLoadFinished() called with: loader = [" + id + "");
-
-                    }
+                    extractFromCursor(data);
                 }
-
 
                 @Override
                 public void onLoaderReset(Loader<Cursor> loader) {
 
+                    adapter = new MoviesAdapter(null, null, null);
                 }
 
             };
+
+    private void extractFromCursor(Cursor data) {
+
+        ArrayList<Movie> movies = new ArrayList<>();
+
+        if (data == null) {
+            return;
+        }
+
+        int titleColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_TITLE);
+        int ratingColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_RATING);
+        int dateColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_RELEASE_DATE);
+        int overviewColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_OVERVIEW);
+        int posterPathColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_POSTER_PATH);
+        int idColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_MOVIE_ID);
+
+        while (data.moveToNext()) {
+
+            String title = data.getString(titleColumnIndex);
+            String rating = data.getString(ratingColumnIndex);
+            String date = data.getString(dateColumnIndex);
+            String overview = data.getString(overviewColumnIndex);
+            String posterPath = data.getString(posterPathColumnIndex);
+            String movieId = data.getString(idColumnIndex);
+
+            movies.add(new Movie(title, rating, date, overview, posterPath, movieId));
+
+            Log.d(TAG, "onLoadFinished() called with: loader = [" + title + "");
+        }
+
+        //instantiating the adapter with the new data and make set it on the RecyclerView
+        adapter = new MoviesAdapter(this, movies, this);
+        recyclerView.setAdapter(adapter);
+
+        //updating the list that we pass to details activity intent
+        mListOfMovies = movies;
+    }
 
     /**
      * Save the parcelable ArrayList of our object to be able to use it later in onRestore method
@@ -109,8 +127,8 @@ public class MainActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES, mListOfMovies);
-        howToSort = Constants.MOST_POPULAR_MOVIES;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,11 +152,16 @@ public class MainActivity extends AppCompatActivity
             recyclerView.setAdapter(adapter);
             mProgressBar.setVisibility(View.GONE); // if data will be shown there's no need to progressBar
         } else {
+
+            Log.d(TAG, "else invoked");
             //check if there internet connection and show a toast to the user if not
             initTheLoaderIfThereConnection();
         }
 
         settingListenerToNavigationTabs();
+
+        getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+
     }
 
     private void settingListenerToNavigationTabs() {
@@ -154,7 +177,7 @@ public class MainActivity extends AppCompatActivity
                             howToSort = Constants.MOST_POPULAR_MOVIES;
                             //restart the loader method to fill the loader with new sort of movies
                             restartTheLoader();
-                            Toast.makeText(mContext, R.string.most_popular_toast, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, R.string.most_popular_selected, Toast.LENGTH_SHORT).show();
                             break;
 
                         case R.id.top_rated_id:
@@ -162,12 +185,14 @@ public class MainActivity extends AppCompatActivity
                             howToSort = Constants.TOP_RATED_MOVIES;
                             //restart the loader method to fill the loader with new sort of movies
                             restartTheLoader();
-                            Toast.makeText(mContext, R.string.top_rated_toast, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, R.string.top_rated_selected, Toast.LENGTH_SHORT).show();
                             break;
 
                         case R.id.favorite_movies_id:
 
                             getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+
+                            Toast.makeText(mContext, R.string.favorite_selected, Toast.LENGTH_SHORT).show();
 
                             break;
                     }

@@ -17,7 +17,6 @@ class Constants {
     //Endpoints CONSTANTS
     final static String MOST_POPULAR_MOVIES = "popular";
     final static String TOP_RATED_MOVIES = "top_rated";
-    final static String FAVORITE_MOVIES = "favorite";
 
     //loaders CONSTANTS
     final static int MOVIES_LOADER = 100;
@@ -33,7 +32,7 @@ class Constants {
     final static String MOVIE_ID = "id";
 
     //Bundle Key
-    final static String BUNDLE_KEY_FOR_MOVIES = "movies key";
+    final static String BUNDLE_KEY_FOR_MOVIES = "movies_key";
 
 
 }

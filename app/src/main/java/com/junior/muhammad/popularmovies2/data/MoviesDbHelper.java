@@ -13,15 +13,21 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "moviesDb.db";
 
     // If you change the database schema, you must increment the database version
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
 
     private static final String CREATE_TABLE_FAVORITE = "CREATE TABLE "
             + FavEntry.TABLE_NAME + "("
             + FavEntry._ID + " INTEGER PRIMARY KEY,"
-            + FavEntry.COLUMN_TITLE + " TEXT UNIQUE NOT NULL,"
-            + FavEntry.COLUMN_MOVIE_ID + " TEXT UNIQUE NOT NULL"
+            + FavEntry.COLUMN_TITLE + " TEXT NOT NULL,"
+            + FavEntry.COLUMN_RATING + " TEXT NOT NULL,"
+            + FavEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL,"
+            + FavEntry.COLUMN_OVERVIEW + " TEXT NOT NULL,"
+            + FavEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL,"
+            + FavEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL"
             + ");";
+
+    private String originalTitle, userRating, releaseDate, overView, posterPath, movieId;
 
 
     public MoviesDbHelper(Context context) {
