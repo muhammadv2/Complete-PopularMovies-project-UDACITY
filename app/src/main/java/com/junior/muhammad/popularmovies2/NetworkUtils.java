@@ -3,6 +3,7 @@ package com.junior.muhammad.popularmovies2;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,7 +18,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-final class NetworkUtils {
+public final class NetworkUtils {
 
     private static OkHttpClient okHttp;
     private static Request request;
@@ -34,7 +35,7 @@ final class NetworkUtils {
      *
      * @return ArrayList<Movie>
      */
-    static ArrayList<Movie> fetchData(String howToSort) {
+    public static ArrayList<Movie> fetchData(String howToSort) {
 
         URL url = null;
         try {
@@ -73,6 +74,8 @@ final class NetworkUtils {
                 .appendQueryParameter("api_key", Constants.API_KEY)
                 .build();
 
+        Log.d("NetworkUtils.class", "getApiUrl() called with: howToSort = [" + builtUri + "]");
+
         return new URL(builtUri.toString());
     }
 
@@ -101,8 +104,11 @@ final class NetworkUtils {
                 String releaseDate = singleMovieObject.optString(Constants.RELEASE_DATE_TAG);
                 String overview = singleMovieObject.optString(Constants.OVERVIEW_TAG);
                 String posterPath = singleMovieObject.optString(Constants.POSTER_PATH_TAG);
+                String movieId = singleMovieObject.optString(Constants.MOVIE_ID);
 
-                movies.add(new Movie(originalTitle, userRating, releaseDate, overview, posterPath));
+                Log.d("NetworkUtils", "handleJson() called with: response = [" + movieId + "]");
+
+                movies.add(new Movie(originalTitle, userRating, releaseDate, overview, posterPath, movieId));
 
             }
 

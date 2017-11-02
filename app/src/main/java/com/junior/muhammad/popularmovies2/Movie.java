@@ -3,25 +3,27 @@ package com.junior.muhammad.popularmovies2;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-class Movie implements Parcelable {
+public class Movie implements Parcelable {
 
     private String originalTitle;
     private String userRating;
     private String releaseDate;
     private String overView;
     private String posterPath;
+    private String movieId;
 
 
-    Movie(String originalTitle, String userRating, String releaseDate, String overView, String posterPath) {
+    Movie(String originalTitle, String userRating, String releaseDate, String overView,
+          String posterPath, String movieId) {
 
         this.posterPath = posterPath;
         this.originalTitle = originalTitle;
         this.userRating = userRating;
         this.releaseDate = releaseDate;
         this.overView = overView;
+        this.movieId = movieId;
 
     }
-
 
     private Movie(Parcel in) {
         originalTitle = in.readString();
@@ -29,19 +31,8 @@ class Movie implements Parcelable {
         releaseDate = in.readString();
         overView = in.readString();
         posterPath = in.readString();
+        movieId = in.readString();
     }
-
-    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
 
     String getOriginalTitle() {
         return originalTitle;
@@ -63,6 +54,23 @@ class Movie implements Parcelable {
         return posterPath;
     }
 
+    public String getMovieId() {
+        return movieId;
+    }
+
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
 
     @Override
     public int describeContents() {
@@ -76,5 +84,6 @@ class Movie implements Parcelable {
         parcel.writeString(releaseDate);
         parcel.writeString(overView);
         parcel.writeString(posterPath);
+        parcel.writeString(movieId);
     }
 }

@@ -1,11 +1,14 @@
-package com.junior.muhammad.popularmovies2;
+package com.junior.muhammad.popularmovies2.loaders;
 
 import android.content.Context;
+
+import com.junior.muhammad.popularmovies2.Movie;
+import com.junior.muhammad.popularmovies2.NetworkUtils;
 
 import java.util.ArrayList;
 
 
-class MovieAsyncTaskLoader extends android.support.v4.content.AsyncTaskLoader<ArrayList<Movie>> {
+public class MovieAsyncTaskLoader extends android.support.v4.content.AsyncTaskLoader<ArrayList<Movie>> {
 
     private String mHowToSort;
 
@@ -23,7 +26,7 @@ class MovieAsyncTaskLoader extends android.support.v4.content.AsyncTaskLoader<Ar
         }
     }
 
-    MovieAsyncTaskLoader(Context context, String howToSort) {
+    public MovieAsyncTaskLoader(Context context, String howToSort) {
         super(context);
 
         mHowToSort = howToSort; //used to determine on what the query url will perform

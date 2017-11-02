@@ -1,12 +1,18 @@
 package com.junior.muhammad.popularmovies2;
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.junior.muhammad.popularmovies2.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -24,6 +30,8 @@ public class DetailsScreen extends AppCompatActivity {
     TextView mOriginalTitle;
     @BindView(R.id.tv_user_rating)
     TextView mUserRating;
+    @BindView(R.id.details_favorite_button)
+    ImageButton mFavoriteImageButton;
     @BindView(R.id.tv_overview)
     TextView mOverview;
     @BindView(R.id.tv_release_date)
@@ -32,6 +40,9 @@ public class DetailsScreen extends AppCompatActivity {
     RatingBar mRatingBar;
     @BindView(R.id.iv_details_activity_poster)
     ImageView mMoviePoster;
+
+    boolean mIsFavorite = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +54,33 @@ public class DetailsScreen extends AppCompatActivity {
         intent = getIntent();
 
         extractIntentExtrasAndSetTheViews();
+
+
+        //Todo comment this part
+        mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
+
+        mFavoriteImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mIsFavorite = true;
+
+                Movie movie = intent.getParcelableExtra(Constants.MOVIE_OBJECT_TAG);
+
+                ContentValues cv = new ContentValues();
+                cv.put(MoviesContract.FavEntry.COLUMN_MOVIE_ID, movie.getMovieId());
+                cv.put(MoviesContract.FavEntry.COLUMN_TITLE, movie.getOriginalTitle());
+
+                mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
+
+                Uri insert = getContentResolver().insert(MoviesContract.FavEntry.CONTENT_URI, cv);
+
+                if (insert != null) {
+                    getContentResolver().notifyChange(insert, null);
+                }
+
+            }
+        });
 
     }
 
@@ -74,8 +112,8 @@ public class DetailsScreen extends AppCompatActivity {
      */
     private String dateFormat(String date) {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-dd-MM");
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-dd-MM");
         Date myDate = null;
         try {
             myDate = dateFormat.parse(date);
@@ -84,6 +122,7 @@ public class DetailsScreen extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         return timeFormat.format(myDate);

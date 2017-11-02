@@ -2,18 +2,24 @@ package com.junior.muhammad.popularmovies2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.junior.muhammad.popularmovies2.data.MoviesContract;
+import com.junior.muhammad.popularmovies2.loaders.FavoriteMoviesLoader;
+import com.junior.muhammad.popularmovies2.loaders.MovieAsyncTaskLoader;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
@@ -47,6 +53,51 @@ public class MainActivity extends AppCompatActivity
 
     //list of movies to hold data returned from the loader
     private ArrayList<Movie> mListOfMovies;
+
+    private LoaderManager.LoaderCallbacks<Cursor> favoriteLoader =
+            new LoaderManager.LoaderCallbacks<Cursor>() {
+
+                @Override
+                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                    return new FavoriteMoviesLoader(getApplicationContext());
+
+                }
+
+                @Override
+                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+                    Log.d(TAG, "onLoadFinished invoked");
+
+                    //check if the ArrayList not null and if it's not pass it to the adapter and show the data
+                    if (data == null) {
+                        return;
+                    }
+//                        ArrayList<Integer> list = new ArrayList<>();
+
+                    int idColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_MOVIE_ID);
+
+                    if (data.moveToNext()) {
+
+                        int id = data.getInt(idColumnIndex);
+
+//                            list.add(id);
+
+                        howToSort = String.valueOf(id);
+                        getSupportLoaderManager().restartLoader(Constants.MOVIES_LOADER, null, this);
+
+//                            howToSort = id;
+                        Log.d(TAG, "onLoadFinished() called with: loader = [" + id + "");
+
+                    }
+                }
+
+
+                @Override
+                public void onLoaderReset(Loader<Cursor> loader) {
+
+                }
+
+            };
 
     /**
      * Save the parcelable ArrayList of our object to be able to use it later in onRestore method
@@ -88,7 +139,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         settingListenerToNavigationTabs();
-
     }
 
     private void settingListenerToNavigationTabs() {
@@ -116,6 +166,10 @@ public class MainActivity extends AppCompatActivity
                             break;
 
                         case R.id.favorite_movies_id:
+
+                            getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+
+                            break;
                     }
                 } else {//if there's no connection and the list is null show toast to tell the user that app need internet
                     Toast.makeText(mContext, R.string.internet_required, Toast.LENGTH_LONG).show();
@@ -124,6 +178,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
 
     //Start of methods related to the loader
     private void initTheLoaderIfThereConnection() {

@@ -17,9 +17,11 @@ class Constants {
     //Endpoints CONSTANTS
     final static String MOST_POPULAR_MOVIES = "popular";
     final static String TOP_RATED_MOVIES = "top_rated";
+    final static String FAVORITE_MOVIES = "favorite";
 
-    //loader CONSTANTS
-    final static int MOVIES_LOADER = 0;
+    //loaders CONSTANTS
+    final static int MOVIES_LOADER = 100;
+    final static int FAVORITES_LOADER = 200;
 
     //handling Json related CONSTANTS
     final static String RESULT_TAG = "results";
@@ -28,6 +30,7 @@ class Constants {
     final static String OVERVIEW_TAG = "overview";
     final static String VOTE_AVERAGE_TAG = "vote_average";
     final static String RELEASE_DATE_TAG = "release_date";
+    final static String MOVIE_ID = "id";
 
     //Bundle Key
     final static String BUNDLE_KEY_FOR_MOVIES = "movies key";

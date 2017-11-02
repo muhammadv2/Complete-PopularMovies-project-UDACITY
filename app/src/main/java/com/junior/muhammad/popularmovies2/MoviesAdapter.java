@@ -45,6 +45,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         mItemClickListener = onItemClickListener;
     }
 
+
     /**
      * interface that will define our listener
      */
