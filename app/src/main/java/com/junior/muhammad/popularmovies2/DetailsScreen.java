@@ -24,12 +24,12 @@ import butterknife.ButterKnife;
 
 public class DetailsScreen extends AppCompatActivity {
 
-    private Intent intent;
-
     @BindView(R.id.tv_original_title)
     TextView mOriginalTitle;
+
     @BindView(R.id.tv_user_rating)
     TextView mUserRating;
+
     @BindView(R.id.details_favorite_button)
     ImageButton mFavoriteImageButton;
     @BindView(R.id.tv_overview)
@@ -41,8 +41,18 @@ public class DetailsScreen extends AppCompatActivity {
     @BindView(R.id.iv_details_activity_poster)
     ImageView mMoviePoster;
 
-    boolean mIsFavorite = false;
+    private Intent intent;
+    private Boolean isFavorite;
+    private Movie movie;
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("boolean_key", isFavorite);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,37 +63,75 @@ public class DetailsScreen extends AppCompatActivity {
 
         intent = getIntent();
 
+        movie = intent.getParcelableExtra(Constants.MOVIE_OBJECT_TAG);
+
         extractIntentExtrasAndSetTheViews();
 
+        favoriteMoviesButtonHandling();
 
-        //Todo comment this part
-        mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
+        if (savedInstanceState != null) {
+            isFavorite = savedInstanceState.getBoolean("boolean_key", false);
+        } else {
+            isFavorite = intent.getBooleanExtra(Constants.IS_FAVORITE_TAG, false);
+        }
+
+        if (isFavorite) {
+            mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
+
+        } else {
+            mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
+        }
+
+
+    }
+
+    private void favoriteMoviesButtonHandling() {
+
 
         mFavoriteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                mIsFavorite = true;
+                if (isFavorite) {
 
-                Movie movie = intent.getParcelableExtra(Constants.MOVIE_OBJECT_TAG);
+                    mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
 
-                ContentValues cv = new ContentValues();
-                cv.put(MoviesContract.FavEntry.COLUMN_TITLE, movie.getTitle());
-                cv.put(MoviesContract.FavEntry.COLUMN_RATING, movie.getUserRating());
-                cv.put(MoviesContract.FavEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
-                cv.put(MoviesContract.FavEntry.COLUMN_OVERVIEW, movie.getOverView());
-                cv.put(MoviesContract.FavEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
-                cv.put(MoviesContract.FavEntry.COLUMN_MOVIE_ID, movie.getMovieId());
 
-                mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
+                    String stringId = movie.getMovieId();
+                    Uri uri = MoviesContract.FavEntry.CONTENT_URI;
+                    uri = uri.buildUpon().appendPath(stringId).build();
 
-                Uri insert = getContentResolver().insert(MoviesContract.FavEntry.CONTENT_URI, cv);
+//                    String id = movie.getMovieId();
+//                    Uri uri = MoviesContract.FavEntry.CONTENT_URI.
+//                            buildUpon().appendPath(id).build();
 
-                Log.d("weac", "onClick() called with: v = [" + insert + "]");
-                if (insert != null) {
-                    getContentResolver().notifyChange(insert, null);
+                    getContentResolver().delete(uri,
+                            null,
+                            null);
+
+                    isFavorite = false;
+                } else {
+
+                    mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
+
+                    ContentValues cv = new ContentValues();
+                    cv.put(MoviesContract.FavEntry.COLUMN_TITLE, movie.getTitle());
+                    cv.put(MoviesContract.FavEntry.COLUMN_RATING, movie.getUserRating());
+                    cv.put(MoviesContract.FavEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+                    cv.put(MoviesContract.FavEntry.COLUMN_OVERVIEW, movie.getOverView());
+                    cv.put(MoviesContract.FavEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+                    cv.put(MoviesContract.FavEntry.COLUMN_MOVIE_ID, movie.getMovieId());
+
+
+                    Uri insert = getContentResolver().insert(MoviesContract.FavEntry.CONTENT_URI, cv);
+
+                    Log.d("weac", "onClick() called with: v = [" + insert + "]");
+                    if (insert != null) {
+                        getContentResolver().notifyChange(insert, null);
+                    }
+
+                    isFavorite = true;
                 }
-
             }
         });
 

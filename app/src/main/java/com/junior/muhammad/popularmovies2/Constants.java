@@ -5,6 +5,7 @@ class Constants {
 
     //Intent related CONSTANTS
     final static String MOVIE_OBJECT_TAG = "original title";
+    final static String IS_FAVORITE_TAG = "is_it";
 
 
     //URL related CONSTANTS
@@ -33,6 +34,7 @@ class Constants {
 
     //Bundle Key
     final static String BUNDLE_KEY_FOR_MOVIES = "movies_key";
+    final static String BUNDLE_KEY_FOR_TAB_ID = "tab_key";
 
 
 }

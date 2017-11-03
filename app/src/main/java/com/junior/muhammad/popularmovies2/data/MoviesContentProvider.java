@@ -119,31 +119,28 @@ public class MoviesContentProvider extends ContentProvider {
 
         int match = sUriMatcher.match(uri);
 
+        int deletedRows;
+
         switch (match) {
 
             case FAVORITE_WITH_ID:
 
                 String id = uri.getPathSegments().get(1);
 
-                selection = "_id=?";
-                selectionArgs = new String[]{id};
-
-                int rows = db.delete(MoviesContract.FavEntry.TABLE_NAME,
-                        selection,
-                        selectionArgs);
-
-                if (rows != 0) {
-                    getContext().getContentResolver().notifyChange(uri, null);
-                    return rows;
-                } else {
-                    throw new UnsupportedOperationException("Unable to delete this : " + uri);
-
-                }
-
+                deletedRows = db.delete(MoviesContract.FavEntry.TABLE_NAME,
+                        MoviesContract.FavEntry.COLUMN_MOVIE_ID + "=?",
+                        new String[]{id});
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
+        // Notify the resolver of a change and return the number of items deleted
+        if (deletedRows != 0) {
+            // A task was deleted, set notification
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return deletedRows;
     }
 
 

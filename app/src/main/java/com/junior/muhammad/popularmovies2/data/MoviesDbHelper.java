@@ -27,9 +27,6 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
             + FavEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL"
             + ");";
 
-    private String originalTitle, userRating, releaseDate, overView, posterPath, movieId;
-
-
     public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION, null);
     }

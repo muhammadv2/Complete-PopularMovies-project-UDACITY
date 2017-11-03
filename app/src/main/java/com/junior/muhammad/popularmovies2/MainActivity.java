@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -29,8 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-        implements android.support.v4.app.LoaderManager.LoaderCallbacks<ArrayList<Movie>>,
-        MoviesAdapter.OnItemClickListener {
+        implements MoviesAdapter.OnItemClickListener {
 
     private static final String TAG = MainActivity.class.toString();
 
@@ -39,8 +39,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.navigation)
     BottomBar bottomBar;
 
-    //string to indicate which sorting mode must be performed it been default on most popular endPoint
-    private static String howToSort = Constants.MOST_POPULAR_MOVIES;
 
     @BindView(R.id.rv_movies)
     RecyclerView recyclerView;
@@ -51,12 +49,53 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.pb_searching)
     ProgressBar mProgressBar;
 
+    //string to indicate which sorting mode must be performed it been default on most popular endPoint
+    private static String howToSort = Constants.MOST_POPULAR_MOVIES;
+
+    //to save the last tab id and retrieve it when rotate screen
+    private static int mTabID = 0;
+
     //list of movies to hold data returned from the loader
-    private ArrayList<Movie> mListOfMovies;
+    private static ArrayList<Movie> mListOfMovies;
+    private ArrayList<Movie> mFavoriteMovies;
+
+    private LoaderManager.LoaderCallbacks<ArrayList<Movie>> allMoviesLoader =
+            new LoaderManager.LoaderCallbacks<ArrayList<Movie>>() {
+
+                @NonNull
+                @Override
+                public Loader<ArrayList<Movie>> onCreateLoader(int id, Bundle args) {
+                    return new MovieAsyncTaskLoader(getApplicationContext(), howToSort); // change on user demand
+
+                }
+
+                @Override
+                public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
+
+                    extractFetchedMovies(data);
+                }
+
+                @Override
+                public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
+
+                }
+
+            };
+
+    private void extractFetchedMovies(ArrayList<Movie> movies) {
+        //check if the ArrayList not null and if it's not pass it to the adapter and show the data
+        if (movies != null && !movies.isEmpty()) {
+            mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
+            adapter = new MoviesAdapter(this, movies, this);
+            recyclerView.setAdapter(adapter);
+            mListOfMovies = movies; // then pass the list of most popular movies
+        }
+    }
 
     private LoaderManager.LoaderCallbacks<Cursor> favoriteLoader =
             new LoaderManager.LoaderCallbacks<Cursor>() {
 
+                @NonNull
                 @Override
                 public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
@@ -66,8 +105,6 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-                    Log.d(TAG, "onLoadFinished invoked");
 
                     extractFromCursor(data);
                 }
@@ -79,6 +116,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
             };
+
 
     private void extractFromCursor(Cursor data) {
 
@@ -105,8 +143,6 @@ public class MainActivity extends AppCompatActivity
             String movieId = data.getString(idColumnIndex);
 
             movies.add(new Movie(title, rating, date, overview, posterPath, movieId));
-
-            Log.d(TAG, "onLoadFinished() called with: loader = [" + title + "");
         }
 
         //instantiating the adapter with the new data and make set it on the RecyclerView
@@ -115,6 +151,7 @@ public class MainActivity extends AppCompatActivity
 
         //updating the list that we pass to details activity intent
         mListOfMovies = movies;
+        mFavoriteMovies = movies;
     }
 
     /**
@@ -126,9 +163,18 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        int currentTabId = bottomBar.getCurrentTabId();
+        outState.putInt(Constants.BUNDLE_KEY_FOR_TAB_ID, currentTabId);
         outState.putParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES, mListOfMovies);
+
     }
 
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+//
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,8 +191,10 @@ public class MainActivity extends AppCompatActivity
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
 
+
         //if the Bundle reference is not null get its content and set the adapter and show the data
-        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.BUNDLE_KEY_FOR_MOVIES)) {
+        if (savedInstanceState != null) {
+            mTabID = savedInstanceState.getInt(Constants.BUNDLE_KEY_FOR_TAB_ID);
             mListOfMovies = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES);
             adapter = new MoviesAdapter(this, mListOfMovies, this);
             recyclerView.setAdapter(adapter);
@@ -156,12 +204,14 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "else invoked");
             //check if there internet connection and show a toast to the user if not
             initTheLoaderIfThereConnection();
-        }
 
-        settingListenerToNavigationTabs();
+        }
 
         getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
+        bottomBar.setDefaultTab(R.id.most_popular_id);
+
+        settingListenerToNavigationTabs();
     }
 
     private void settingListenerToNavigationTabs() {
@@ -169,35 +219,42 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onTabSelected(@IdRes int tabId) {
 
-                //first check if the device online then restart the loader to query the new end point
-                if (isOnline()) {
-                    switch (tabId) {
-                        case R.id.most_popular_id:
+//                if (mTabID != 0)
+//                    tabId = mTabID;
+
+                Log.d(TAG, "onTabSelected() called with: tabId = [" + (tabId == R.id.most_popular_id) + "]");
+
+                switch (tabId) {
+
+                    case R.id.most_popular_id:
+                        //first check if the device online then restart the loader to query the new end point
+                        if (isOnline()) {
                             //first set the howToSort String to most popular movies constant
                             howToSort = Constants.MOST_POPULAR_MOVIES;
                             //restart the loader method to fill the loader with new sort of movies
-                            restartTheLoader();
+                            restartAllMoviesLoader();
                             Toast.makeText(mContext, R.string.most_popular_selected, Toast.LENGTH_SHORT).show();
-                            break;
+                        }
+                        break;
 
-                        case R.id.top_rated_id:
+                    case R.id.top_rated_id:
+                        if (isOnline()) {
                             //first set the howToSort String to top rated movies constant
                             howToSort = Constants.TOP_RATED_MOVIES;
                             //restart the loader method to fill the loader with new sort of movies
-                            restartTheLoader();
+                            restartAllMoviesLoader();
                             Toast.makeText(mContext, R.string.top_rated_selected, Toast.LENGTH_SHORT).show();
-                            break;
 
-                        case R.id.favorite_movies_id:
+                        }
+                        break;
 
-                            getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+                    case R.id.favorite_movies_id:
 
-                            Toast.makeText(mContext, R.string.favorite_selected, Toast.LENGTH_SHORT).show();
+                        mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible no need here
 
-                            break;
-                    }
-                } else {//if there's no connection and the list is null show toast to tell the user that app need internet
-                    Toast.makeText(mContext, R.string.internet_required, Toast.LENGTH_LONG).show();
+                        getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+
+                        Toast.makeText(mContext, R.string.favorite_selected, Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -209,51 +266,44 @@ public class MainActivity extends AppCompatActivity
     private void initTheLoaderIfThereConnection() {
         if (isOnline()) {
             //init of the loader obviously :D
-            getSupportLoaderManager().initLoader(Constants.MOVIES_LOADER, null, this);
+            getSupportLoaderManager().initLoader(Constants.MOVIES_LOADER, null, allMoviesLoader);
         } else {
             Toast.makeText(this, R.string.internet_required, Toast.LENGTH_LONG).show();
         }
     }
 
-    private void restartTheLoader() {
-        getSupportLoaderManager().restartLoader(Constants.MOVIES_LOADER, null, this);
+    private void restartAllMoviesLoader() {
+        getSupportLoaderManager().restartLoader(Constants.MOVIES_LOADER, null, allMoviesLoader);
     }
 
-
-    @Override
-    public Loader<ArrayList<Movie>> onCreateLoader(int id, Bundle args) {
-        return new MovieAsyncTaskLoader(this, howToSort); // change on user demand
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
-
-        //check if the ArrayList not null and if it's not pass it to the adapter and show the data
-        if (data != null && !data.isEmpty()) {
-            mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
-            adapter = new MoviesAdapter(this, data, this);
-            recyclerView.setAdapter(adapter);
-            mListOfMovies = data; // then pass the list of most popular movies
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
-        //reset the adapter when no longer needed
-        adapter = new MoviesAdapter(null, null, null);
-    }
-//End of methods related to the loader
 
     @Override
     public void onClick(int position) {
 
         Movie movie = mListOfMovies.get(position);
 
+        int selectedId = Integer.parseInt(movie.getMovieId());
+
+
         //instantiating an intent to start details activity passing it the parcelable Movie object
         Intent intent = new Intent(this, DetailsScreen.class);
         intent.putExtra(Constants.MOVIE_OBJECT_TAG, movie);
+        intent.putExtra(Constants.IS_FAVORITE_TAG, isFavorite(selectedId));
 
         startActivity(intent);
+    }
+
+    private Boolean isFavorite(int selectedId) {
+
+        for (int i = 0; i < mFavoriteMovies.size(); i++) {
+
+            int favoriteIds = Integer.parseInt(mFavoriteMovies.get(i).getMovieId());
+
+            if (selectedId == favoriteIds) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
