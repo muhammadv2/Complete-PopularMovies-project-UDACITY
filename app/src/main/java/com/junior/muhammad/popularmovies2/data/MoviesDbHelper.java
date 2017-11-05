@@ -13,7 +13,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "moviesDb.db";
 
     // If you change the database schema, you must increment the database version
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
 
 
     private static final String CREATE_TABLE_FAVORITE = "CREATE TABLE "

@@ -36,7 +36,6 @@ public class MoviesContentProvider extends ContentProvider {
     }
 
     // Member variable for MoviesDbHelper that's initialized in the onCreate() method
-
     private MoviesDbHelper mMoviesHelper;
 
     @Override
@@ -88,7 +87,6 @@ public class MoviesContentProvider extends ContentProvider {
 
         int match = sUriMatcher.match(uri);
 
-
         switch (match) {
 
             case FAVORITE:
@@ -108,8 +106,6 @@ public class MoviesContentProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-
-
     }
 
     @Override

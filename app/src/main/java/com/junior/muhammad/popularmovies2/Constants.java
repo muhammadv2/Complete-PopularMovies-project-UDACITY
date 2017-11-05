@@ -35,6 +35,7 @@ class Constants {
     //Bundle Key
     final static String BUNDLE_KEY_FOR_MOVIES = "movies_key";
     final static String BUNDLE_KEY_FOR_TAB_ID = "tab_key";
+    final static String BUNDLE_KEY_FOR_BOOLEAN = "boolean_key";
 
-
+    final static String BUNDLE_KEY = "movies_bundle";
 }

@@ -15,7 +15,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.junior.muhammad.popularmovies2.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,7 +27,8 @@
             android:name="com.junior.muhammad.popularmovies2.DetailsScreen"
             android:label="@string/title_activity_details_screen"
             android:parentActivityName="com.junior.muhammad.popularmovies2.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+        />
 
         <provider
             android:name=".data.MoviesContentProvider"
@@ -35,3 +37,5 @@
     </application>
 
 </manifest>
+
+    <!--android:configChanges="orientation|screenSize"-->

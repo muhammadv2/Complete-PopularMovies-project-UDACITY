@@ -73,6 +73,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
         Movie movie = movies.get(position);
 
+        holder.itemView.setTag(position);
+
         ImageUtils.bindImage(mContext, movie.getPosterPath(), holder.mPosterImageView);
 
     }

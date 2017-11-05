@@ -3,6 +3,9 @@ package com.junior.muhammad.popularmovies2;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Simply a model class which implementing parcelable interface
+ */
 public class Movie implements Parcelable {
 
     private String title, userRating, releaseDate, overView, posterPath, movieId;

@@ -5,8 +5,8 @@
     <string name="title_activity_details_screen">DetailsScreen</string>
     <string name="overview">Overview</string>
     <string name="poster_image_description">poster_image</string>
-    <string name="most_popular_selected">This is our popular movies for today</string>
-    <string name="top_rated_selected">The is our top rated movies for today</string>
+    <string name="most_popular_selected">Our popular movies for today</string>
+    <string name="top_rated_selected">Our top rated movies for today</string>
     <string name="favorite_selected">Your favorite movies</string>
     <string name="internet_required">This app need Internet Connection</string>
     <string name="release_date">Release date</string>

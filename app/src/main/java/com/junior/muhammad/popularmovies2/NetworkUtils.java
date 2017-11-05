@@ -56,8 +56,6 @@ public final class NetworkUtils {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            response.body().close();// to release all resource held by the response
         }
 
         return handleJson(responseBody);
