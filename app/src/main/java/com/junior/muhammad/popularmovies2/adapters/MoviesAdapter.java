@@ -1,4 +1,4 @@
-package com.junior.muhammad.popularmovies2;
+package com.junior.muhammad.popularmovies2.adapters;
 
 
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.junior.muhammad.popularmovies2.R;
 import com.junior.muhammad.popularmovies2.models.Movie;
 import com.junior.muhammad.popularmovies2.utils.ImageUtils;
 
@@ -33,7 +34,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
      * @param data                needed to update the imageView with Movie objects
      * @param onItemClickListener This allow us to use the Adapter as a component with MainActivity
      */
-    MoviesAdapter(Context context, List<Movie> data, OnItemClickListener onItemClickListener) {
+    public MoviesAdapter(Context context, List<Movie> data, OnItemClickListener onItemClickListener) {
 
         mContext = context;
 
@@ -49,7 +50,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     /**
      * interface that will define our listener
      */
-    interface OnItemClickListener {
+    public interface OnItemClickListener {
         void onClick(int position);
     }
 

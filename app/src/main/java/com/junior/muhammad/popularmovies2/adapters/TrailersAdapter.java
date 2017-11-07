@@ -1,4 +1,4 @@
-package com.junior.muhammad.popularmovies2;
+package com.junior.muhammad.popularmovies2.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.junior.muhammad.popularmovies2.Constants;
+import com.junior.muhammad.popularmovies2.R;
 import com.junior.muhammad.popularmovies2.models.MovieTrailer;
 import com.squareup.picasso.Picasso;
 
@@ -43,7 +45,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
 
     }
 
-    interface OnItemClickListener {
+    public interface OnItemClickListener {
         void onClick(int position);
     }
 

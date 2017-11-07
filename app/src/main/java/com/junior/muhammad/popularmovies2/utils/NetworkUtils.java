@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.junior.muhammad.popularmovies2.Constants;
 import com.junior.muhammad.popularmovies2.models.Movie;
+import com.junior.muhammad.popularmovies2.models.MovieReviews;
 import com.junior.muhammad.popularmovies2.models.MovieTrailer;
 
 import org.json.JSONArray;
@@ -66,12 +67,12 @@ public final class NetworkUtils {
         return handleJson(responseBody);
     }
 
-    public static ArrayList<MovieTrailer> fetchMovieExtras(String movieId) {
+    public static ArrayList<MovieTrailer> fetchTrailers(String movieId) {
 
         URL url = null;
 
         try {
-            url = getVideoUrl(movieId);
+            url = getExtraUrl(movieId);
         } catch (
                 MalformedURLException e) {
             e.printStackTrace();
@@ -96,7 +97,37 @@ public final class NetworkUtils {
 
     }
 
-    private static URL getVideoUrl(String movieId) throws MalformedURLException {
+    public static ArrayList<MovieReviews> fetchReviews(String movieId) {
+
+        URL url = null;
+
+        try {
+            url = getExtraUrl(movieId);
+        } catch (
+                MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        if (url != null) {
+            okHttp = new OkHttpClient();
+            request = new Request.Builder().url(url).build();
+        }
+
+        String responseBody = null;
+        try {
+            response = okHttp.newCall(request).execute();
+            if (response.isSuccessful() && response.body() != null) { //to check if the response returned successfully or not
+                responseBody = response.body().string();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return handleReviewJson(responseBody);
+
+    }
+
+    private static URL getExtraUrl(String movieId) throws MalformedURLException {
 
         Uri uri = Uri.parse(Constants.BASE_QUERY_URL).buildUpon()
                 .appendPath(movieId)
@@ -104,7 +135,6 @@ public final class NetworkUtils {
                 .appendQueryParameter("api_key", Constants.API_KEY)
                 .build();
 
-        Log.d("network", "getVideoUrl() called with: movieId = [" + uri + "]");
         return new URL(uri.toString());
     }
 
@@ -178,7 +208,6 @@ public final class NetworkUtils {
                 String trailerName = singeTrailer.optString(Constants.TRAILER_NAME);
 
                 movieTrailers.add(new MovieTrailer(trailerKey, trailerName));
-                Log.d("network", "handleTrailerJson() called with: response = [" + trailerKey + "]");
             }
 
         } catch (JSONException e) {
@@ -186,4 +215,35 @@ public final class NetworkUtils {
         }
         return movieTrailers;
     }
+
+
+    private static ArrayList<MovieReviews> handleReviewJson(String responseBody) {
+
+        if (TextUtils.isEmpty(responseBody)) {
+            return null;
+        }
+
+        ArrayList<MovieReviews> movieReviews = new ArrayList<>();
+
+        try {
+            JSONObject baseJson = new JSONObject(responseBody);
+            JSONArray resultArray = baseJson.getJSONArray(Constants.RESULT_TAG);
+
+            for (int i = 0; i < resultArray.length(); i++) {
+
+                JSONObject singeTrailer = resultArray.getJSONObject(i);
+
+                String author = singeTrailer.optString(Constants.REVIEW_AUTHOR);
+                String content = singeTrailer.optString(Constants.REVIEW_CONTENT);
+
+                movieReviews.add(new MovieReviews(author, content));
+                Log.d("network", "handleTrailerJson() called with: response = [" + author + "]");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return movieReviews;
+    }
+
 }

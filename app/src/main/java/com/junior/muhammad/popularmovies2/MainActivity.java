@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.junior.muhammad.popularmovies2.adapters.MoviesAdapter;
 import com.junior.muhammad.popularmovies2.data.MoviesContract;
 import com.junior.muhammad.popularmovies2.loaders.FavoriteMoviesLoader;
 import com.junior.muhammad.popularmovies2.loaders.MovieAsyncTaskLoader;
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity
 
     //list of movies to hold data from favorite database to iterate on it to find favorite movies
     private ArrayList<Movie> mFavoriteMovies;
+
+    private int mTabId;
 
     /**
      * Loader call back response of instantiating the AsyncTaskLoader to load the movies ArrayList
@@ -169,7 +172,9 @@ public class MainActivity extends AppCompatActivity
 
         //instantiating the adapter with the new data and make set it on the RecyclerView
         adapter = new MoviesAdapter(this, movies, this);
-        recyclerView.setAdapter(adapter);
+
+        if (mTabId == 3)
+            recyclerView.setAdapter(adapter);
 
         //updating the list that we pass to details activity intent
         mListOfMovies = movies;
@@ -197,8 +202,7 @@ public class MainActivity extends AppCompatActivity
         if (loader_id == Constants.FAVORITES_LOADER) {
             //init the favorite loader here to void doing that in onCreate method which the two
             //loaders will be called init in the same time
-            getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
-            getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+           getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
         } else {
             getSupportLoaderManager().restartLoader(Constants.MOVIES_LOADER, null, allMoviesLoader);
         }
@@ -236,6 +240,8 @@ public class MainActivity extends AppCompatActivity
             //check if there internet connection and show a toast to the user if not
             initTheLoaderIfThereConnection();
         }
+
+        getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
         //setting the bottomBar library which will move between movies categories
         settingListenerToNavigationTabs();
@@ -276,8 +282,10 @@ public class MainActivity extends AppCompatActivity
 
                     case R.id.favorite_movies_id:
 
+                        mTabId = 3;
                         mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible no need here
-                        //restart the favorite loader to be able to show the new inserted movies
+
+                        getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
                         getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
                         Toast.makeText(mContext, R.string.favorite_selected, Toast.LENGTH_SHORT).show();

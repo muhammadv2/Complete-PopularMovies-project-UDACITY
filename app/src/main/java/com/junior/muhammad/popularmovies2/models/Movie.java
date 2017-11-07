@@ -32,23 +32,23 @@ public class Movie implements Parcelable {
         movieId = in.readString();
     }
 
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    String getUserRating() {
+    public String getUserRating() {
         return userRating;
     }
 
-    String getReleaseDate() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
-    String getOverView() {
+    public String getOverView() {
         return overView;
     }
 
-    String getPosterPath() {
+    public String getPosterPath() {
         return posterPath;
     }
 

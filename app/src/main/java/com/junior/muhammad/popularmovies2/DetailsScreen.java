@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.junior.muhammad.popularmovies2.adapters.TrailersAdapter;
 import com.junior.muhammad.popularmovies2.data.MoviesContract;
 import com.junior.muhammad.popularmovies2.models.Movie;
 import com.junior.muhammad.popularmovies2.models.MovieTrailer;
@@ -135,7 +136,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
             mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
         }
 
-        getSupportLoaderManager().initLoader(500, null, trailersLoader);
+        getSupportLoaderManager().initLoader(Constants.TRAILERS_LOADER, null, trailersLoader);
 
     }
 
@@ -244,7 +245,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         //https://www.youtube.com/watch?v=yA_0RPjh4Ms
         String url = Constants.BASE_URL_FOR_TRAILER_VIDEO + trailerKey;
 
-        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
@@ -270,7 +271,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
         @Override
         public ArrayList<MovieTrailer> loadInBackground() {
-            return NetworkUtils.fetchMovieExtras(movieId);
+            return NetworkUtils.fetchTrailers(movieId);
         }
     }
 }
