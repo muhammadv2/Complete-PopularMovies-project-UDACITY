@@ -2,7 +2,8 @@ package com.junior.muhammad.popularmovies2.models;
 
 public class MovieTrailer {
 
-    private String  key, name;
+    private final String  key;
+    private final String name;
 
     public MovieTrailer( String key, String name) {
 

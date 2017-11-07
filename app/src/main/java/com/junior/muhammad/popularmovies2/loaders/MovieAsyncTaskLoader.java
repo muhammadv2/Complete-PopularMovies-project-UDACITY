@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class MovieAsyncTaskLoader extends android.support.v4.content.AsyncTaskLoader<ArrayList<Movie>> {
 
-    private String mHowToSort;
+    private final String mHowToSort;
 
     private ArrayList<Movie> mResult;
 

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
      * Loader call back response of instantiating the AsyncTaskLoader to load the movies ArrayList
      * from the internet and then updating the UI
      */
-    private LoaderManager.LoaderCallbacks<ArrayList<Movie>> allMoviesLoader =
+    private final LoaderManager.LoaderCallbacks<ArrayList<Movie>> allMoviesLoader =
             new LoaderManager.LoaderCallbacks<ArrayList<Movie>>() {
 
                 @NonNull
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity
      * Loader call back response of instantiating the CursorLoader to load the movies from favorite
      * database and then update the UI
      */
-    private LoaderManager.LoaderCallbacks<Cursor> favoriteLoader =
+    private final LoaderManager.LoaderCallbacks<Cursor> favoriteLoader =
             new LoaderManager.LoaderCallbacks<Cursor>() {
 
                 @NonNull
@@ -274,14 +274,16 @@ public class MainActivity extends AppCompatActivity
 
                     case R.id.favorite_movies_id:
 
+                        //update the tabId variable every time this button is clicked
                         mTabId = 3;
                         mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible no need here
 
+                        //i used only init once and restart once but i dunno why it doesn't update
+                        //the adapter unless them used together
                         getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
                         getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
                         Toast.makeText(mContext, R.string.favorite_selected, Toast.LENGTH_SHORT).show();
-
                 }
             }
         });
@@ -311,13 +313,12 @@ public class MainActivity extends AppCompatActivity
         //get the movie id from the current movie object
         int selectedId = Integer.parseInt(movie.getMovieId());
 
-
         //instantiating an intent to start details activity passing it the parcelable Movie object
         Intent intent = new Intent(this, DetailsScreen.class);
         intent.putExtra(Constants.MOVIE_OBJECT_TAG, movie);
         //passing true if the movie object passed by the intent is favorite and false if it's not
         intent.putExtra(Constants.IS_FAVORITE_TAG, isFavorite(selectedId));
-
+        //using startActivityForResult to have onActivityForResult called when return from details screen
         startActivityForResult(intent, Constants.SECOND_ACTIVITY_REQUEST_CODE);
     }
 
@@ -334,6 +335,9 @@ public class MainActivity extends AppCompatActivity
             if (selectedId == favoriteIds) {
                 return true;
             } else if (selectedId == returnValue) {
+                //this if to find that the selected movie is already favorite because when return
+                //from the details screen activity the list of mFavoriteMovies doesn't update
+                //so if re-entered the same movie it'll appear no favorite even if it does
                 return true;
             }
         }
@@ -344,6 +348,7 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //simply this is the returned movie id and assigning the member variable with the new value
         if (resultCode == Activity.RESULT_OK && data != null ) {
             returnValue = Integer.parseInt(data.getStringExtra("movie_id"));
         }

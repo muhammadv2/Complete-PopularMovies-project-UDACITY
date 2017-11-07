@@ -8,7 +8,12 @@ import android.os.Parcelable;
  */
 public class Movie implements Parcelable {
 
-    private String title, userRating, releaseDate, overView, posterPath, movieId;
+    private final String title;
+    private final String userRating;
+    private final String releaseDate;
+    private final String overView;
+    private final String posterPath;
+    private final String movieId;
 
 
     public Movie(String title, String userRating, String releaseDate, String overView,

@@ -37,8 +37,6 @@ import butterknife.ButterKnife;
 
 public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.OnItemClickListener {
 
-//    private static final String TAG = DetailsScreen.class.toString();
-
     @BindView(R.id.tv_original_title)
     TextView mOriginalTitle;
     @BindView(R.id.tv_user_rating)
@@ -58,20 +56,26 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     @BindView(R.id.tv_reviews_not_available)
     TextView reviewsNotAvailable;
 
+    //our two adapter used in this activity
     TrailersAdapter trailersAdapter;
-
     ReviewsAdapter reviewsAdapter;
 
     private Intent intent;
+
+    //boolean to indicate if the movie is already favorite or not
     private Boolean isFavorite;
+
     private Movie movie;
 
     private String mMovieId;
 
     private ArrayList<MovieTrailer> movieTrailers = new ArrayList<>();
 
-
-    LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>> trailersLoader = new
+    /**
+     * Loader call back response of instantiating the AsyncTaskLoader to load the trailers ArrayList
+     * from the internet and then updating the UI
+     */
+    final LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>> trailersLoader = new
             LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>>() {
                 @Override
                 public Loader<ArrayList<MovieTrailer>> onCreateLoader(int id, Bundle args) {
@@ -99,7 +103,11 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         movieTrailers = data;
     }
 
-    LoaderManager.LoaderCallbacks<ArrayList<MovieReviews>> reviewsLoader = new
+    /**
+     * Loader call back response of instantiating the AsyncTaskLoader to load the reviews ArrayList
+     * from the internet and then updating the UI
+     */
+    final LoaderManager.LoaderCallbacks<ArrayList<MovieReviews>> reviewsLoader = new
             LoaderManager.LoaderCallbacks<ArrayList<MovieReviews>>() {
                 @Override
                 public Loader<ArrayList<MovieReviews>> onCreateLoader(int id, Bundle args) {
@@ -136,7 +144,6 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         super.onSaveInstanceState(outState);
 
         outState.putBoolean(Constants.BUNDLE_KEY_FOR_BOOLEAN, isFavorite);
-
     }
 
     @Override
@@ -146,11 +153,13 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
         ButterKnife.bind(this);
 
+        //setting up the recyclerView for the trailers
         trailerRv.setHasFixedSize(true);
         LinearLayoutManager trailersLm =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         trailerRv.setLayoutManager(trailersLm);
 
+        //setting up the recyclerView for the reviews
         reviewsRv.setHasFixedSize(true);
         LinearLayoutManager reviewsLm =
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -183,12 +192,11 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
             mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
         }
 
+        //initialization our two loaders for trailers and reviews
         getSupportLoaderManager().initLoader(Constants.TRAILERS_LOADER, null, trailersLoader);
-
         getSupportLoaderManager().initLoader(Constants.REVIEWS_LOADER, null, reviewsLoader);
 
         reviewsNotAvailable.setVisibility(View.VISIBLE);
-
     }
 
     /**
@@ -222,7 +230,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                     //if the movie is not favorite then set the image to tell that its now favorite
                     mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
 
-                    //creating a content values putting all the data within every cloumn
+                    //creating a content values putting all the data within every column
                     ContentValues cv = new ContentValues();
                     cv.put(MoviesContract.FavEntry.COLUMN_TITLE, movie.getTitle());
                     cv.put(MoviesContract.FavEntry.COLUMN_RATING, movie.getUserRating());
@@ -242,6 +250,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                     //set the boolean to true
                     isFavorite = true;
 
+                    //set a result to be returned to the MainActivity with the movie id
                     Intent intent = new Intent();
                     intent.putExtra("movie_id", movie.getMovieId());
                     setResult(Activity.RESULT_OK, intent);
@@ -288,11 +297,14 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         return timeFormat.format(myDate);
     }
 
+    /**
+     * onClick associated with trailers when trailer clicked start an intent from the url of youtube
+     * website and the trailer key to allow the user watch the trailers
+     */
     @Override
     public void onClick(int position) {
 
         String trailerKey = movieTrailers.get(position).getTrailerKey();
-        //https://www.youtube.com/watch?v=yA_0RPjh4Ms
         String url = Constants.BASE_URL_FOR_TRAILER_VIDEO + trailerKey;
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -302,9 +314,13 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
     }
 
+    /**
+     * static class to start the networking call for the trailers endpoint and returning ArrayList
+     * of this trailers
+     */
     static class TrailersAsyncLoader extends android.support.v4.content.AsyncTaskLoader<ArrayList<MovieTrailer>> {
 
-        String movieId;
+        final String movieId;
 
         @Override
         protected void onStartLoading() {
@@ -325,9 +341,14 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         }
     }
 
+
+    /**
+     * static class to start the networking call for the reviews endpoint and returning ArrayList
+     * of this reviews
+     */
     static class ReviewsAsyncLoader extends AsyncTaskLoader<ArrayList<MovieReviews>> {
 
-        String movieId;
+        final String movieId;
 
         @Override
         protected void onStartLoading() {

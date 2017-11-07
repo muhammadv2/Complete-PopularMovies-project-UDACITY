@@ -19,7 +19,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsV
 
     private int mItemsInTheList;
 
-    private List<MovieReviews> mReviewsList;
+    private final List<MovieReviews> mReviewsList;
 
     /**
      * Adapter constructor helping setup the Adapter and ViewHolder with

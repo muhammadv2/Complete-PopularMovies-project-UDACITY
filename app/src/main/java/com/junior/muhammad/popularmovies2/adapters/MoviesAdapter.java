@@ -19,10 +19,10 @@ import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
-    private Context mContext;
+    private final Context mContext;
     private int mItemsInTheList;
-    private OnItemClickListener mItemClickListener;
-    private List<Movie> movies;
+    private final OnItemClickListener mItemClickListener;
+    private final List<Movie> movies;
 
     /**
      * Adapter constructor helping setup the Adapter and ViewHolder with

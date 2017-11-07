@@ -22,13 +22,13 @@ import butterknife.ButterKnife;
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailerViewHolder> {
 
     private static final String TAG = TrailersAdapter.class.toString();
-    private Context mContext;
+    private final Context mContext;
 
     private int mItemsInTheList;
 
-    private OnItemClickListener mOnItemClickListener;
+    private final OnItemClickListener mOnItemClickListener;
 
-    private List<MovieTrailer> mTrailers;
+    private final List<MovieTrailer> mTrailers;
 
     /**
      * Adapter constructor helping setup the Adapter and ViewHolder with
