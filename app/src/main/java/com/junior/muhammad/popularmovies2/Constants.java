@@ -10,7 +10,7 @@ public class Constants {
 
     //URL related CONSTANTS
     public final static String BASE_QUERY_URL = "https://api.themoviedb.org/3/movie/";
-    public final static String API_KEY = "d55e616e0c7efb8d7b2bc2edf05cfd94";//Todo add your Api key
+    public final static String API_KEY = "";//Todo add your Api key
 
     //Image URL related CONSTANTS
     public final static String IMAGE_QUERY_URL = "https://image.tmdb.org/t/p/w342";
