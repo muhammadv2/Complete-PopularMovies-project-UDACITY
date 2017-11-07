@@ -1,8 +1,10 @@
-package com.junior.muhammad.popularmovies2;
+package com.junior.muhammad.popularmovies2.utils;
 
 import android.content.Context;
 import android.widget.ImageView;
 
+import com.junior.muhammad.popularmovies2.Constants;
+import com.junior.muhammad.popularmovies2.R;
 import com.squareup.picasso.Picasso;
 
 
@@ -11,8 +13,6 @@ import com.squareup.picasso.Picasso;
  */
 
 public class ImageUtils {
-
-
 
     public static void bindImage(Context context, String imgPath, ImageView intoImage) {
 

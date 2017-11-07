@@ -1,9 +1,13 @@
-package com.junior.muhammad.popularmovies2;
+package com.junior.muhammad.popularmovies2.utils;
 
 
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.junior.muhammad.popularmovies2.Constants;
+import com.junior.muhammad.popularmovies2.models.Movie;
+import com.junior.muhammad.popularmovies2.models.MovieTrailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +44,7 @@ public final class NetworkUtils {
         URL url = null;
         try {
             url = getApiUrl(howToSort);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -59,7 +64,48 @@ public final class NetworkUtils {
         }
 
         return handleJson(responseBody);
+    }
 
+    public static ArrayList<MovieTrailer> fetchMovieExtras(String movieId) {
+
+        URL url = null;
+
+        try {
+            url = getVideoUrl(movieId);
+        } catch (
+                MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        if (url != null) {
+            okHttp = new OkHttpClient();
+            request = new Request.Builder().url(url).build();
+        }
+
+        String responseBody = null;
+        try {
+            response = okHttp.newCall(request).execute();
+            if (response.isSuccessful() && response.body() != null) { //to check if the response returned successfully or not
+                responseBody = response.body().string();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return handleTrailerJson(responseBody);
+
+    }
+
+    private static URL getVideoUrl(String movieId) throws MalformedURLException {
+
+        Uri uri = Uri.parse(Constants.BASE_QUERY_URL).buildUpon()
+                .appendPath(movieId)
+                .appendPath(Constants.TRAILERS_FOR_MOVIE)
+                .appendQueryParameter("api_key", Constants.API_KEY)
+                .build();
+
+        Log.d("network", "getVideoUrl() called with: movieId = [" + uri + "]");
+        return new URL(uri.toString());
     }
 
     /**
@@ -71,8 +117,6 @@ public final class NetworkUtils {
                 .appendPath(howToSort)
                 .appendQueryParameter("api_key", Constants.API_KEY)
                 .build();
-
-        Log.d("NetworkUtils.class", "getApiUrl() called with: howToSort = [" + builtUri + "]");
 
         return new URL(builtUri.toString());
     }
@@ -104,10 +148,7 @@ public final class NetworkUtils {
                 String posterPath = singleMovieObject.optString(Constants.POSTER_PATH_TAG);
                 String movieId = singleMovieObject.optString(Constants.MOVIE_ID);
 
-                Log.d("NetworkUtils", "handleJson() called with: response = [" + posterPath + "]");
-
                 movies.add(new Movie(originalTitle, userRating, releaseDate, overview, posterPath, movieId));
-
             }
 
         } catch (JSONException e) {
@@ -115,5 +156,34 @@ public final class NetworkUtils {
         }
 
         return movies;
+    }
+
+    private static ArrayList<MovieTrailer> handleTrailerJson(String response) {
+
+        if (TextUtils.isEmpty(response)) {
+            return null;
+        }
+
+        ArrayList<MovieTrailer> movieTrailers = new ArrayList<>();
+
+        try {
+            JSONObject baseJson = new JSONObject(response);
+            JSONArray resultArray = baseJson.getJSONArray(Constants.RESULT_TAG);
+
+            for (int i = 0; i < resultArray.length(); i++) {
+
+                JSONObject singeTrailer = resultArray.getJSONObject(i);
+
+                String trailerKey = singeTrailer.optString(Constants.TRAILER_KEY);
+                String trailerName = singeTrailer.optString(Constants.TRAILER_NAME);
+
+                movieTrailers.add(new MovieTrailer(trailerKey, trailerName));
+                Log.d("network", "handleTrailerJson() called with: response = [" + trailerKey + "]");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return movieTrailers;
     }
 }

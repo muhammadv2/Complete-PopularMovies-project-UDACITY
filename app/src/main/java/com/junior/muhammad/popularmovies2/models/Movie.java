@@ -1,4 +1,4 @@
-package com.junior.muhammad.popularmovies2;
+package com.junior.muhammad.popularmovies2.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,7 +11,7 @@ public class Movie implements Parcelable {
     private String title, userRating, releaseDate, overView, posterPath, movieId;
 
 
-    Movie(String title, String userRating, String releaseDate, String overView,
+    public Movie(String title, String userRating, String releaseDate, String overView,
           String posterPath, String movieId) {
 
         this.title = title;
@@ -52,7 +52,7 @@ public class Movie implements Parcelable {
         return posterPath;
     }
 
-    String getMovieId() {
+    public String getMovieId() {
         return movieId;
     }
 

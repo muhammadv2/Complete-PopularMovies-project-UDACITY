@@ -2,26 +2,37 @@ package com.junior.muhammad.popularmovies2;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.junior.muhammad.popularmovies2.data.MoviesContract;
+import com.junior.muhammad.popularmovies2.models.Movie;
+import com.junior.muhammad.popularmovies2.models.MovieTrailer;
+import com.junior.muhammad.popularmovies2.utils.ImageUtils;
+import com.junior.muhammad.popularmovies2.utils.NetworkUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailsScreen extends AppCompatActivity {
+public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.OnItemClickListener {
+
+//    private static final String TAG = DetailsScreen.class.toString();
 
     @BindView(R.id.tv_original_title)
     TextView mOriginalTitle;
@@ -33,14 +44,48 @@ public class DetailsScreen extends AppCompatActivity {
     TextView mOverview;
     @BindView(R.id.tv_release_date)
     TextView mReleaseDate;
-    @BindView(R.id.ratingBar)
-    RatingBar mRatingBar;
     @BindView(R.id.iv_details_activity_poster)
     ImageView mMoviePoster;
+    @BindView(R.id.trailers_rv)
+    RecyclerView trailerRv;
 
+    TrailersAdapter trailersAdapter;
     private Intent intent;
     private Boolean isFavorite;
     private Movie movie;
+
+    private String mMovieId;
+
+    private ArrayList<MovieTrailer> movieTrailers = new ArrayList<>();
+
+
+    LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>> trailersLoader = new
+            LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>>() {
+                @Override
+                public Loader<ArrayList<MovieTrailer>> onCreateLoader(int id, Bundle args) {
+                    return new TrailersAsyncLoader(getApplicationContext(), mMovieId);
+                }
+
+                @Override
+                public void onLoadFinished(Loader<ArrayList<MovieTrailer>> loader, ArrayList<MovieTrailer> data) {
+
+                    extractFetchedTrailers(data);
+                }
+
+                @Override
+                public void onLoaderReset(Loader<ArrayList<MovieTrailer>> loader) {
+
+                }
+            };
+
+    void extractFetchedTrailers(ArrayList<MovieTrailer> data) {
+
+        trailersAdapter = new TrailersAdapter(this, data,
+                this);
+        trailerRv.setAdapter(trailersAdapter);
+
+        movieTrailers = data;
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -57,10 +102,18 @@ public class DetailsScreen extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        trailerRv.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        trailerRv.setLayoutManager(layoutManager);
+
+
         //instantiating the intent from the coming intent
         intent = getIntent();
         //getting the movie object from the intent
         movie = intent.getParcelableExtra(Constants.MOVIE_OBJECT_TAG);
+        mMovieId = movie.getMovieId();
         //set all the views up
         extractIntentExtrasAndSetTheViews();
         //handles the button response to favorite and un favorite movies
@@ -82,6 +135,7 @@ public class DetailsScreen extends AppCompatActivity {
             mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
         }
 
+        getSupportLoaderManager().initLoader(500, null, trailersLoader);
 
     }
 
@@ -153,20 +207,13 @@ public class DetailsScreen extends AppCompatActivity {
 
         Movie movie = intent.getParcelableExtra(Constants.MOVIE_OBJECT_TAG);
 
-        String rating = movie.getUserRating();
-        float fl = Float.valueOf(rating); //turning the string into float to be used in rating bar
-
         String date = movie.getReleaseDate();
 
         mOriginalTitle.setText(movie.getTitle());
-        mUserRating.setText(rating);
-        mRatingBar.setRating(fl / 2); //dividing the value of the rate to be the same ratio in 5 star rating bar
+        mUserRating.setText(movie.getUserRating());
         mOverview.setText(movie.getOverView());
         mReleaseDate.setText(dateFormat(date));
         ImageUtils.bindImage(this, movie.getPosterPath(), mMoviePoster);
-
-        mRatingBar.setIsIndicator(true); // set the rating bar as indicator to prevent editing on it
-
     }
 
     /**
@@ -190,5 +237,40 @@ public class DetailsScreen extends AppCompatActivity {
         return timeFormat.format(myDate);
     }
 
+    @Override
+    public void onClick(int position) {
 
+        String trailerKey = movieTrailers.get(position).getTrailerKey();
+        //https://www.youtube.com/watch?v=yA_0RPjh4Ms
+        String url = Constants.BASE_URL_FOR_TRAILER_VIDEO + trailerKey;
+
+        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+
+    }
+
+    static class TrailersAsyncLoader extends android.support.v4.content.AsyncTaskLoader<ArrayList<MovieTrailer>> {
+
+        String movieId;
+
+        @Override
+        protected void onStartLoading() {
+            super.onStartLoading();
+
+            forceLoad();
+        }
+
+        TrailersAsyncLoader(Context context, String movieId) {
+            super(context);
+
+            this.movieId = movieId;
+        }
+
+        @Override
+        public ArrayList<MovieTrailer> loadInBackground() {
+            return NetworkUtils.fetchMovieExtras(movieId);
+        }
+    }
 }

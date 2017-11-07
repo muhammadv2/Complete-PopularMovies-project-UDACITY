@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.junior.muhammad.popularmovies2.data.MoviesContract;
 import com.junior.muhammad.popularmovies2.loaders.FavoriteMoviesLoader;
 import com.junior.muhammad.popularmovies2.loaders.MovieAsyncTaskLoader;
+import com.junior.muhammad.popularmovies2.models.Movie;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
@@ -32,7 +33,6 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements MoviesAdapter.OnItemClickListener {
 
-    //Todo(1) fix problem when return from details activity back to the same position of the view that clicked
     //Todo(2) fix the problem when favorite a movie and back to main screen and re enter the movie details that favorite button still selected
 
     private static final String TAG = MainActivity.class.toString();
@@ -80,8 +80,6 @@ public class MainActivity extends AppCompatActivity
 
                     //get the loader id
                     loader_id = loader.getId();
-
-                    Log.d(TAG, "onLoadFinished() called with: loader =" + loader_id);
 
                     //method to set the ArrayList of movies to the adapter and set the adapter
                     //on the recycler view
@@ -194,7 +192,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-
 
         //if statement to identify the current working loader to restart after activity get resumed
         if (loader_id == Constants.FAVORITES_LOADER) {

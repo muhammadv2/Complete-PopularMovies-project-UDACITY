@@ -3,11 +3,13 @@ package com.junior.muhammad.popularmovies2;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.junior.muhammad.popularmovies2.models.Movie;
+import com.junior.muhammad.popularmovies2.utils.ImageUtils;
 
 import java.util.List;
 
@@ -57,7 +59,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     @Override
     public MoviesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        int id = R.layout.card_view;
+        int id = R.layout.main_activity_card_view;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(id, parent, false);
 
@@ -82,7 +84,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     @Override
     public int getItemCount() {
-        Log.d("MoviesAdapter", "fetching" + mItemsInTheList);
         return mItemsInTheList; // Simply return the number of the list size
     }
 
@@ -108,8 +109,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
         @Override
         public void onClick(View view) {
-            int position = getAdapterPosition(); //to get the AdapterPosition of our view
-            mItemClickListener.onClick(position); //pass the data to our interface
+            mItemClickListener.onClick(getAdapterPosition()); //pass the adapter position to our interface
         }
     }
 }

@@ -2,8 +2,8 @@ package com.junior.muhammad.popularmovies2.loaders;
 
 import android.content.Context;
 
-import com.junior.muhammad.popularmovies2.Movie;
-import com.junior.muhammad.popularmovies2.NetworkUtils;
+import com.junior.muhammad.popularmovies2.models.Movie;
+import com.junior.muhammad.popularmovies2.utils.NetworkUtils;
 
 import java.util.ArrayList;
 
