@@ -1,5 +1,6 @@
 package com.junior.muhammad.popularmovies2;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,7 +14,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -34,19 +34,12 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements MoviesAdapter.OnItemClickListener {
 
-    //Todo(2) fix the problem when favorite a movie and back to main screen and re enter the movie details that favorite button still selected
-
-    private static final String TAG = MainActivity.class.toString();
-
     private Context mContext;
 
     @BindView(R.id.navigation)
     BottomBar bottomBar;
     @BindView(R.id.rv_movies)
     RecyclerView recyclerView;
-    private MoviesAdapter adapter;
-
-    //progress bar to show while the recyclerView loading
     @BindView(R.id.pb_searching)
     ProgressBar mProgressBar;
 
@@ -62,7 +55,11 @@ public class MainActivity extends AppCompatActivity
     //list of movies to hold data from favorite database to iterate on it to find favorite movies
     private ArrayList<Movie> mFavoriteMovies;
 
+    private MoviesAdapter adapter;
+
     private int mTabId;
+
+    int returnValue;
 
     /**
      * Loader call back response of instantiating the AsyncTaskLoader to load the movies ArrayList
@@ -96,8 +93,6 @@ public class MainActivity extends AppCompatActivity
                 }
 
             };
-
-
     private void extractFetchedMovies(ArrayList<Movie> movies) {
         //check if the ArrayList not null and if it's not pass it to the adapter and show the data
         if (movies != null && !movies.isEmpty()) {
@@ -138,7 +133,6 @@ public class MainActivity extends AppCompatActivity
                     adapter = new MoviesAdapter(null, null, null);
                 }
             };
-
     private void extractFromCursor(Cursor data) {
 
         ArrayList<Movie> movies = new ArrayList<>();
@@ -173,6 +167,8 @@ public class MainActivity extends AppCompatActivity
         //instantiating the adapter with the new data and make set it on the RecyclerView
         adapter = new MoviesAdapter(this, movies, this);
 
+        //only update the recycler view if the favorite tab is the selected and this to prevent
+        //updating the adapter with favorite movies when init from onCreate
         if (mTabId == 3)
             recyclerView.setAdapter(adapter);
 
@@ -183,7 +179,6 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Save the parcelable ArrayList of our object to be able to use it later in onCreate method
-     *
      * @param outState is the Bundle will be saving our data
      */
     @Override
@@ -202,7 +197,7 @@ public class MainActivity extends AppCompatActivity
         if (loader_id == Constants.FAVORITES_LOADER) {
             //init the favorite loader here to void doing that in onCreate method which the two
             //loaders will be called init in the same time
-           getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+            getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
         } else {
             getSupportLoaderManager().restartLoader(Constants.MOVIES_LOADER, null, allMoviesLoader);
         }
@@ -227,8 +222,6 @@ public class MainActivity extends AppCompatActivity
         //if the Bundle reference is not null get its content and restart the loader passing that bundle
         if (savedInstanceState != null) {
 
-            Log.d(TAG, "onCreate() called with: savedInstanceState = [ + ");
-
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList(Constants.BUNDLE_KEY,
                     savedInstanceState.getParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES));
@@ -241,6 +234,7 @@ public class MainActivity extends AppCompatActivity
             initTheLoaderIfThereConnection();
         }
 
+        //init the favoriteLoader to start query the db data to find which movies are favorite
         getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
         //setting the bottomBar library which will move between movies categories
@@ -255,8 +249,6 @@ public class MainActivity extends AppCompatActivity
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-
-//                getSupportLoaderManager().
                 switch (tabId) {
 
                     case R.id.most_popular_id:
@@ -299,7 +291,6 @@ public class MainActivity extends AppCompatActivity
     //Start of methods related to the loader
     private void initTheLoaderIfThereConnection() {
         if (isOnline()) {
-            Log.d(TAG, "initTheLoaderIfThereConnection() called");
             //init of the loader obviously :D
             getSupportLoaderManager().initLoader(Constants.MOVIES_LOADER, null, allMoviesLoader);
         } else {
@@ -327,7 +318,7 @@ public class MainActivity extends AppCompatActivity
         //passing true if the movie object passed by the intent is favorite and false if it's not
         intent.putExtra(Constants.IS_FAVORITE_TAG, isFavorite(selectedId));
 
-        startActivity(intent);
+        startActivityForResult(intent, Constants.SECOND_ACTIVITY_REQUEST_CODE);
     }
 
     /**
@@ -340,12 +331,22 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < mFavoriteMovies.size(); i++) {
 
             int favoriteIds = Integer.parseInt(mFavoriteMovies.get(i).getMovieId());
-
             if (selectedId == favoriteIds) {
+                return true;
+            } else if (selectedId == returnValue) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK && data != null ) {
+            returnValue = Integer.parseInt(data.getStringExtra("movie_id"));
+        }
     }
 
     /**

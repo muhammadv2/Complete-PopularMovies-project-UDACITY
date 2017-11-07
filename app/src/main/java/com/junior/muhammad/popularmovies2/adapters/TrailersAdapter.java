@@ -2,7 +2,6 @@ package com.junior.muhammad.popularmovies2.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,24 +30,35 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
 
     private List<MovieTrailer> mTrailers;
 
-
+    /**
+     * Adapter constructor helping setup the Adapter and ViewHolder with
+     *
+     * @param context             needed to be passed to picasso library
+     * @param data                needed to update the views with its data
+     * @param onItemClickListener This allow us to use the Adapter as a component with MainActivity
+     */
     public TrailersAdapter(Context context, List<MovieTrailer> data,
                            OnItemClickListener onItemClickListener) {
 
         mContext = context;
 
+        //member variable will be updated with the list size to be returned in getITemCount method
         if (data != null && data.size() > 0) mItemsInTheList = data.size();
-
         mTrailers = data;
 
         mOnItemClickListener = onItemClickListener;
-
     }
 
+    /**
+     * interface that will define the listener for trailers clicks
+     */
     public interface OnItemClickListener {
         void onClick(int position);
     }
 
+    /**
+     * To create our ViewHolder by inflating our XML and returning a new MovieVieHolder
+     */
     @Override
     public TrailerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int id = R.layout.trailers_card_view;
@@ -59,29 +69,28 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
 
     }
 
+
     @Override
     public void onBindViewHolder(TrailerViewHolder holder, int position) {
-
+        //get the object associated with this position from the passed list of data
         MovieTrailer trailer = mTrailers.get(position);
-
+        //extract the needed strings
         String trailerKey = trailer.getTrailerKey();
         String trailerName = trailer.getTrailerName();
-
+        //creating a url string to be passed to picasso helping create a url for the trailer thumbnail
         String url = Constants.BASE_URL_FOR_TRAILER + trailerKey + Constants.TRAILER_IMAGE_QLT;
-        Log.d(TAG, "url is " + url);
-
+        //using the help of picasso set the image to the layout imageView
         Picasso.with(mContext)
                 .load(url)
-                .placeholder(R.drawable.place_holder)
+                .placeholder(R.drawable.trailer_place_holder)
                 .into(holder.trailerScreen);
-
+        //set the trailer name to help differentiate the trailers
         holder.trailerName.setText(trailerName.trim());
 
     }
 
     @Override
     public int getItemCount() {
-        Log.d("TrailersAdapter", "s" + mItemsInTheList);
         return mItemsInTheList;
     }
 
@@ -93,7 +102,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
         @BindView(R.id.trailer_name)
         TextView trailerName;
 
-        public TrailerViewHolder(View itemView) {
+        TrailerViewHolder(View itemView) {
             super(itemView);
 
             itemView.setOnClickListener(this);

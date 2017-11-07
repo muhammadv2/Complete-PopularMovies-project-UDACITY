@@ -3,9 +3,9 @@ package com.junior.muhammad.popularmovies2.models;
 
 public class MovieReviews {
 
-    String reviewAuthor, reviewContent;
+    private String reviewAuthor, reviewContent;
 
-    public MovieReviews(String author, String content){
+    public MovieReviews(String author, String content) {
         reviewAuthor = author;
         reviewContent = content;
     }

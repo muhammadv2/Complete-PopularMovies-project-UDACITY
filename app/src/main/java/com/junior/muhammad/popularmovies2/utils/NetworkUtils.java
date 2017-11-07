@@ -67,6 +67,12 @@ public final class NetworkUtils {
         return handleJson(responseBody);
     }
 
+    /**
+     * this method helps fetching the trailers needed to every movie and it do create a url for the
+     * specif movie id and then make http connection on it the parsing the json and then
+     *
+     * @return ArrayList<MovieTrailer>
+     */
     public static ArrayList<MovieTrailer> fetchTrailers(String movieId, String extra) {
 
         URL url = null;
@@ -97,6 +103,12 @@ public final class NetworkUtils {
 
     }
 
+    /**
+     * this method helps fetching the reviews needed to every movie and it do create a url for the
+     * specif movie id and then make http connection on it the parsing the json and then
+     *
+     * @return ArrayList<MovieReviews>
+     */
     public static ArrayList<MovieReviews> fetchReviews(String movieId, String extra) {
 
         URL url = null;
@@ -127,6 +139,9 @@ public final class NetworkUtils {
 
     }
 
+    /**
+     * build the URL upon the movie id and ducking the exception to be caught when called
+     */
     private static URL getExtraUrl(String movieId, String trailersOrReviews) throws MalformedURLException {
 
         Uri uri = Uri.parse(Constants.BASE_QUERY_URL).buildUpon()
@@ -139,7 +154,7 @@ public final class NetworkUtils {
     }
 
     /**
-     * build the URL and ducking the exception to be caught when called
+     * build the URL for movies different categories and ducking the exception to be caught when called
      */
     private static URL getApiUrl(String howToSort) throws MalformedURLException {
 
@@ -152,8 +167,7 @@ public final class NetworkUtils {
     }
 
     /**
-     * The method responsableR of handling the json returned from the request and extracting all the
-     * data needed and creating an Movie array with it and then return it
+     * handle the json coming from fetching list of movies
      */
     private static ArrayList<Movie> handleJson(String response) {
 
@@ -188,6 +202,9 @@ public final class NetworkUtils {
         return movies;
     }
 
+    /**
+     * handle the json coming from fetching trailers for every movie
+     */
     private static ArrayList<MovieTrailer> handleTrailerJson(String response) {
 
         if (TextUtils.isEmpty(response)) {
@@ -217,6 +234,9 @@ public final class NetworkUtils {
     }
 
 
+    /**
+     * handle the json coming from fetching reviews for every movie
+     */
     private static ArrayList<MovieReviews> handleReviewJson(String responseBody) {
 
         if (TextUtils.isEmpty(responseBody)) {

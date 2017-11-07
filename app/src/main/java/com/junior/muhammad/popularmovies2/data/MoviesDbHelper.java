@@ -15,7 +15,6 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version
     private static final int VERSION = 3;
 
-
     private static final String CREATE_TABLE_FAVORITE = "CREATE TABLE "
             + FavEntry.TABLE_NAME + "("
             + FavEntry._ID + " INTEGER PRIMARY KEY,"
@@ -27,6 +26,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
             + FavEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL"
             + ");";
 
+    //typical SQLLiteOpenHelper constructor
     public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION, null);
     }
@@ -34,6 +34,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        //calling execSQL creates the table from our String
         db.execSQL(CREATE_TABLE_FAVORITE);
 
     }
@@ -41,6 +42,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        //if there's an update to the db scheme drop the table and recreate it
         db.execSQL("DROP TABLE IF EXISTS " + FavEntry.TABLE_NAME);
         onCreate(db);
     }

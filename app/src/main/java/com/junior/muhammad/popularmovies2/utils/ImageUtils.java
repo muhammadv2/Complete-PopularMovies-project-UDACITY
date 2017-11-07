@@ -11,7 +11,6 @@ import com.squareup.picasso.Picasso;
 /**
  * Using the help of picasso library to fetch our images
  */
-
 public class ImageUtils {
 
     public static void bindImage(Context context, String imgPath, ImageView intoImage) {
@@ -20,9 +19,8 @@ public class ImageUtils {
 
         Picasso.with(context)
                 .load(url)
-                .placeholder(R.drawable.place_holder)
-                .error(R.drawable.error_loading_image)
+                .placeholder(R.drawable.image_place_holder)
+                .error(R.drawable.image_broken_holder)
                 .into(intoImage);
-
     }
 }

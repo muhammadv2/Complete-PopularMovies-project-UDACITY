@@ -21,12 +21,21 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsV
 
     private List<MovieReviews> mReviewsList;
 
-    public ReviewsAdapter( List<MovieReviews> data) {
+    /**
+     * Adapter constructor helping setup the Adapter and ViewHolder with
+     *
+     * @param data as the list of objects will be used to update views
+     */
+    public ReviewsAdapter(List<MovieReviews> data) {
 
+        //member variable will be updated with the list size to be returned in getITemCount method
         if (data != null && data.size() > 0) mItemsInTheList = data.size();
         mReviewsList = data;
     }
 
+    /**
+     * To create our ViewHolder by inflating our XML and returning a new MovieVieHolder
+     */
     @Override
     public ReviewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -37,6 +46,10 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsV
         return new ReviewsAdapter.ReviewsViewHolder(view);
     }
 
+    /**
+     * get the MovieReview object associated with the position and extract the needed data then
+     * setting it to the defined views
+     */
     @Override
     public void onBindViewHolder(ReviewsViewHolder holder, int position) {
 
@@ -54,14 +67,14 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsV
         return mItemsInTheList;
     }
 
-    public class ReviewsViewHolder extends RecyclerView.ViewHolder {
+     class ReviewsViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.tv_review_author)
         TextView author;
         @BindView(R.id.tv_review_content)
         TextView content;
 
-        public ReviewsViewHolder(View itemView) {
+         ReviewsViewHolder(View itemView) {
             super(itemView);
 
             //inject butterKnife library to use the constructor to set it self

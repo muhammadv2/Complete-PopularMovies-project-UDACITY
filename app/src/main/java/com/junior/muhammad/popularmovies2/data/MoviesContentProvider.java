@@ -14,10 +14,10 @@ import android.support.annotation.Nullable;
 public class MoviesContentProvider extends ContentProvider {
 
     // Define final integer constants for the directory of tables and a single items.
-
     public static final int FAVORITE = 300;
     public static final int FAVORITE_WITH_ID = 301;
 
+    //uri matcher that will help the provider define which uri to deal with
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     /**
@@ -27,15 +27,12 @@ public class MoviesContentProvider extends ContentProvider {
     private static UriMatcher buildUriMatcher() {
 
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-
         uriMatcher.addURI(MoviesContract.AUTHORITY, MoviesContract.PATH_FAV_MOVIES, FAVORITE);
         uriMatcher.addURI(MoviesContract.AUTHORITY, MoviesContract.PATH_FAV_MOVIES + "/#", FAVORITE_WITH_ID);
 
         return uriMatcher;
-
     }
 
-    // Member variable for MoviesDbHelper that's initialized in the onCreate() method
     private MoviesDbHelper mMoviesHelper;
 
     @Override
@@ -43,7 +40,6 @@ public class MoviesContentProvider extends ContentProvider {
 
         //initialize a DbHelper to gain access to it.
         mMoviesHelper = new MoviesDbHelper(getContext());
-
         return true;
     }
 

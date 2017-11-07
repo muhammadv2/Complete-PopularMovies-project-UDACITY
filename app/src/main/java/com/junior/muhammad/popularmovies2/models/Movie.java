@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Simply a model class which implementing parcelable interface
+ * Simply a model class for the main Movie which implementing parcelable interface
  */
 public class Movie implements Parcelable {
 

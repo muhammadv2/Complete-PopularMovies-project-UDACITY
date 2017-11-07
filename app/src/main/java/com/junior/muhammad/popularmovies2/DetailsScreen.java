@@ -1,6 +1,7 @@
 package com.junior.muhammad.popularmovies2;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,8 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     RecyclerView trailerRv;
     @BindView(R.id.reviews_rv)
     RecyclerView reviewsRv;
+    @BindView(R.id.tv_reviews_not_available)
+    TextView reviewsNotAvailable;
 
     TrailersAdapter trailersAdapter;
 
@@ -106,7 +109,12 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                 @Override
                 public void onLoadFinished(Loader<ArrayList<MovieReviews>> loader, ArrayList<MovieReviews> data) {
 
-                    updateReviewsAdapter(data);
+                    if (data != null && data.size() > 0) {
+
+                        reviewsNotAvailable.setVisibility(View.INVISIBLE);
+                        updateReviewsAdapter(data);
+
+                    }
                 }
 
                 @Override
@@ -179,6 +187,8 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
         getSupportLoaderManager().initLoader(Constants.REVIEWS_LOADER, null, reviewsLoader);
 
+        reviewsNotAvailable.setVisibility(View.VISIBLE);
+
     }
 
     /**
@@ -232,10 +242,9 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                     //set the boolean to true
                     isFavorite = true;
 
-
-                    //TODO save the object is the favorite button pressed on it to add the favorite list in the mainactivity
-                    //to not appear un favorite if re entered without restarting the loader
-
+                    Intent intent = new Intent();
+                    intent.putExtra("movie_id", movie.getMovieId());
+                    setResult(Activity.RESULT_OK, intent);
                 }
             }
         });

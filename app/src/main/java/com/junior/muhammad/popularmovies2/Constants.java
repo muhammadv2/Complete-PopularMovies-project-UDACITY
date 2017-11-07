@@ -19,8 +19,8 @@ public class Constants {
     //Endpoints CONSTANTS
     final static String MOST_POPULAR_MOVIES = "popular";
     final static String TOP_RATED_MOVIES = "top_rated";
-    public final static String TRAILERS_FOR_MOVIE = "videos";
-    public final static String REVIEWS_FOR_MOVIE = "reviews";
+    final static String TRAILERS_FOR_MOVIE = "videos";
+    final static String REVIEWS_FOR_MOVIE = "reviews";
 
 
     //loaders CONSTANTS
@@ -49,6 +49,10 @@ public class Constants {
     final static String BUNDLE_KEY_FOR_BOOLEAN = "boolean_key";
     final static String BUNDLE_KEY = "movies_bundle";
 
+    //youtube related constants
     public static final String TRAILER_IMAGE_QLT = "/maxresdefault.jpg";
     static final String BASE_URL_FOR_TRAILER_VIDEO = "https://www.youtube.com/watch?v=";
+
+    //intent keys
+    public static final int SECOND_ACTIVITY_REQUEST_CODE = 550;
 }

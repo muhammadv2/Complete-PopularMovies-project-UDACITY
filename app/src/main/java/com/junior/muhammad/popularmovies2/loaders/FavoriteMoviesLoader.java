@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import com.junior.muhammad.popularmovies2.data.MoviesContract;
 import com.junior.muhammad.popularmovies2.data.MoviesDbHelper;
 
-
+/**
+ * CursorLoader to load the favorite movies in a background thread from the database and return
+ * a cursor
+ */
 public class FavoriteMoviesLoader extends android.support.v4.content.CursorLoader {
 
 
@@ -23,7 +26,6 @@ public class FavoriteMoviesLoader extends android.support.v4.content.CursorLoade
 
         Cursor cursor;
         try {
-
             cursor = db.query(
                     MoviesContract.FavEntry.TABLE_NAME,
                     null,
@@ -33,18 +35,12 @@ public class FavoriteMoviesLoader extends android.support.v4.content.CursorLoade
                     null,
                     MoviesContract.FavEntry._ID);
 
-
         } catch (Exception e) {
             e.printStackTrace();
-
             return null;
-
         }
-
         return cursor;
-
     }
-
 }
 
 

@@ -20,11 +20,8 @@ import butterknife.ButterKnife;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
     private Context mContext;
-
     private int mItemsInTheList;
-
     private OnItemClickListener mItemClickListener;
-
     private List<Movie> movies;
 
     /**
@@ -79,7 +76,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         holder.itemView.setTag(position);
 
         ImageUtils.bindImage(mContext, movie.getPosterPath(), holder.mPosterImageView);
-
     }
 
 
@@ -101,6 +97,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         //Constructor help finding our view and set up the view with onClickListener
         MoviesViewHolder(View itemView) {
             super(itemView);
+
             itemView.setOnClickListener(this);
 
             //inject butterKnife library to use the constructor to set it self

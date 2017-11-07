@@ -20,4 +20,5 @@
     <string name="trailer_video">trailer_video</string>
     <string name="no_trailers">No trailers for this movies</string>
     <string name="do_yu_like_it">Do yu like it</string>
+    <string name="no_reviews_available">No reviews available for this movie :(</string>
 </resources>
