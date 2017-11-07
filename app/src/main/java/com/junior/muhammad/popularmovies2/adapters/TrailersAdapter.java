@@ -77,8 +77,6 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
 
         holder.trailerName.setText(trailerName.trim());
 
-        holder.itemView.setTag(position);
-
     }
 
     @Override

@@ -27,7 +27,6 @@
             android:layout_height="52dp"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="movie name"
             android:textColor="@android:color/white"
             android:textSize="22sp"
             android:textStyle="bold"
@@ -35,18 +34,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <ImageView
             android:id="@+id/iv_details_activity_poster"
             android:layout_width="145dp"
             android:layout_height="217dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:contentDescription="@string/poster_thumbnail"
             android:src="@drawable/movie_place_holder"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_original_title" />
-
 
         <TextView
             android:id="@+id/user_detail_holder"
@@ -66,7 +63,6 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="36dp"
             android:fontFamily="sans-serif-condensed"
-            android:text="8.3"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/user_detail_holder"
@@ -90,7 +86,6 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="28dp"
             android:fontFamily="sans-serif-condensed"
-            android:text="16/15/2020"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/textView"
@@ -101,7 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:drawableLeft="@drawable/like_me_or_not_draw"
+            android:drawableStart="@drawable/like_me_or_not_draw"
             app:layout_constraintStart_toStartOf="@+id/release_date_holder"
             app:layout_constraintTop_toBottomOf="@+id/release_date_holder" />
 
@@ -112,6 +107,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="24dp"
             android:background="#80ffffff"
+            android:contentDescription="@string/do_yu_like_it"
             android:src="@mipmap/ic_launcher"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/release_date_holder" />
@@ -133,11 +129,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:drawableStart="@drawable/overview_draw"
             android:text="@string/overview"
             android:textColor="@color/textColor"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintHorizontal_bias="0.472"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view_holder_1" />
@@ -147,6 +143,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3">
@@ -156,33 +153,42 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
+                android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:text="the movie overview"
-                android:textColor="@color/textColor"
                 android:textSize="18sp" />
 
         </FrameLayout>
 
-        <View
-            android:id="@+id/view_holder_2"
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/colorPrimary"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frame_layout_holder" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/trailers_rv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="32dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/custom_border"
+            android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/view_holder_2" />
+            app:layout_constraintTop_toBottomOf="@+id/frame_layout_holder" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reviews_rv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/custom_border"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/trailers_rv" />
+
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

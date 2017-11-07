@@ -20,6 +20,8 @@ public class Constants {
     final static String MOST_POPULAR_MOVIES = "popular";
     final static String TOP_RATED_MOVIES = "top_rated";
     public final static String TRAILERS_FOR_MOVIE = "videos";
+    public final static String REVIEWS_FOR_MOVIE = "reviews";
+
 
     //loaders CONSTANTS
     final static int MOVIES_LOADER = 100;

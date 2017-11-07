@@ -67,12 +67,12 @@ public final class NetworkUtils {
         return handleJson(responseBody);
     }
 
-    public static ArrayList<MovieTrailer> fetchTrailers(String movieId) {
+    public static ArrayList<MovieTrailer> fetchTrailers(String movieId, String extra) {
 
         URL url = null;
 
         try {
-            url = getExtraUrl(movieId);
+            url = getExtraUrl(movieId, extra);
         } catch (
                 MalformedURLException e) {
             e.printStackTrace();
@@ -97,12 +97,12 @@ public final class NetworkUtils {
 
     }
 
-    public static ArrayList<MovieReviews> fetchReviews(String movieId) {
+    public static ArrayList<MovieReviews> fetchReviews(String movieId, String extra) {
 
         URL url = null;
 
         try {
-            url = getExtraUrl(movieId);
+            url = getExtraUrl(movieId, extra);
         } catch (
                 MalformedURLException e) {
             e.printStackTrace();
@@ -127,11 +127,11 @@ public final class NetworkUtils {
 
     }
 
-    private static URL getExtraUrl(String movieId) throws MalformedURLException {
+    private static URL getExtraUrl(String movieId, String trailersOrReviews) throws MalformedURLException {
 
         Uri uri = Uri.parse(Constants.BASE_QUERY_URL).buildUpon()
                 .appendPath(movieId)
-                .appendPath(Constants.TRAILERS_FOR_MOVIE)
+                .appendPath(trailersOrReviews)
                 .appendQueryParameter("api_key", Constants.API_KEY)
                 .build();
 

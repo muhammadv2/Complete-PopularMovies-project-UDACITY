@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,9 +17,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.junior.muhammad.popularmovies2.adapters.ReviewsAdapter;
 import com.junior.muhammad.popularmovies2.adapters.TrailersAdapter;
 import com.junior.muhammad.popularmovies2.data.MoviesContract;
 import com.junior.muhammad.popularmovies2.models.Movie;
+import com.junior.muhammad.popularmovies2.models.MovieReviews;
 import com.junior.muhammad.popularmovies2.models.MovieTrailer;
 import com.junior.muhammad.popularmovies2.utils.ImageUtils;
 import com.junior.muhammad.popularmovies2.utils.NetworkUtils;
@@ -49,8 +52,13 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     ImageView mMoviePoster;
     @BindView(R.id.trailers_rv)
     RecyclerView trailerRv;
+    @BindView(R.id.reviews_rv)
+    RecyclerView reviewsRv;
 
     TrailersAdapter trailersAdapter;
+
+    ReviewsAdapter reviewsAdapter;
+
     private Intent intent;
     private Boolean isFavorite;
     private Movie movie;
@@ -70,7 +78,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                 @Override
                 public void onLoadFinished(Loader<ArrayList<MovieTrailer>> loader, ArrayList<MovieTrailer> data) {
 
-                    extractFetchedTrailers(data);
+                    updateTrailersAdapter(data);
                 }
 
                 @Override
@@ -79,7 +87,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                 }
             };
 
-    void extractFetchedTrailers(ArrayList<MovieTrailer> data) {
+    void updateTrailersAdapter(ArrayList<MovieTrailer> data) {
 
         trailersAdapter = new TrailersAdapter(this, data,
                 this);
@@ -87,6 +95,33 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
         movieTrailers = data;
     }
+
+    LoaderManager.LoaderCallbacks<ArrayList<MovieReviews>> reviewsLoader = new
+            LoaderManager.LoaderCallbacks<ArrayList<MovieReviews>>() {
+                @Override
+                public Loader<ArrayList<MovieReviews>> onCreateLoader(int id, Bundle args) {
+                    return new ReviewsAsyncLoader(getApplicationContext(), mMovieId);
+                }
+
+                @Override
+                public void onLoadFinished(Loader<ArrayList<MovieReviews>> loader, ArrayList<MovieReviews> data) {
+
+                    updateReviewsAdapter(data);
+                }
+
+                @Override
+                public void onLoaderReset(Loader<ArrayList<MovieReviews>> loader) {
+
+                }
+            };
+
+    void updateReviewsAdapter(ArrayList<MovieReviews> data) {
+
+        reviewsAdapter = new ReviewsAdapter(data);
+        reviewsRv.setAdapter(reviewsAdapter);
+
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -104,10 +139,14 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         ButterKnife.bind(this);
 
         trailerRv.setHasFixedSize(true);
-
-        LinearLayoutManager layoutManager =
+        LinearLayoutManager trailersLm =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        trailerRv.setLayoutManager(layoutManager);
+        trailerRv.setLayoutManager(trailersLm);
+
+        reviewsRv.setHasFixedSize(true);
+        LinearLayoutManager reviewsLm =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        reviewsRv.setLayoutManager(reviewsLm);
 
 
         //instantiating the intent from the coming intent
@@ -137,6 +176,8 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         }
 
         getSupportLoaderManager().initLoader(Constants.TRAILERS_LOADER, null, trailersLoader);
+
+        getSupportLoaderManager().initLoader(Constants.REVIEWS_LOADER, null, reviewsLoader);
 
     }
 
@@ -271,7 +312,30 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
         @Override
         public ArrayList<MovieTrailer> loadInBackground() {
-            return NetworkUtils.fetchTrailers(movieId);
+            return NetworkUtils.fetchTrailers(movieId, Constants.TRAILERS_FOR_MOVIE);
+        }
+    }
+
+    static class ReviewsAsyncLoader extends AsyncTaskLoader<ArrayList<MovieReviews>> {
+
+        String movieId;
+
+        @Override
+        protected void onStartLoading() {
+            super.onStartLoading();
+
+            forceLoad();
+        }
+
+        ReviewsAsyncLoader(Context context, String movieId) {
+            super(context);
+
+            this.movieId = movieId;
+        }
+
+        @Override
+        public ArrayList<MovieReviews> loadInBackground() {
+            return NetworkUtils.fetchReviews(movieId, Constants.REVIEWS_FOR_MOVIE);
         }
     }
 }
