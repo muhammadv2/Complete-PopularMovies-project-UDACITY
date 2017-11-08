@@ -1,7 +1,7 @@
 package com.junior.muhammad.popularmovies2;
 
 
-public class Constants {
+final public class Constants {
 
     //Intent related CONSTANTS
     final static String MOVIE_OBJECT_TAG = "original title";
@@ -10,7 +10,7 @@ public class Constants {
 
     //URL related CONSTANTS
     public final static String BASE_QUERY_URL = "https://api.themoviedb.org/3/movie/";
-    public final static String API_KEY = "";//Todo add your Api key
+    public final static String API_KEY = "d55e616e0c7efb8d7b2bc2edf05cfd94";//Todo add your Api key
 
     //Image URL related CONSTANTS
     public final static String IMAGE_QUERY_URL = "https://image.tmdb.org/t/p/w342";
@@ -48,11 +48,12 @@ public class Constants {
     final static String BUNDLE_KEY_FOR_MOVIES = "movies_key";
     final static String BUNDLE_KEY_FOR_BOOLEAN = "boolean_key";
     final static String BUNDLE_KEY = "movies_bundle";
+    final static String BUNDLE_KEY_FOR_LAYOUT = "layoutManagerState";
 
     //youtube related constants
     public static final String TRAILER_IMAGE_QLT = "/maxresdefault.jpg";
     static final String BASE_URL_FOR_TRAILER_VIDEO = "https://www.youtube.com/watch?v=";
 
     //intent keys
-    public static final int SECOND_ACTIVITY_REQUEST_CODE = 550;
+     static final int SECOND_ACTIVITY_REQUEST_CODE = 550;
 }

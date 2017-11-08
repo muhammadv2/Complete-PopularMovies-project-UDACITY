@@ -16,7 +16,6 @@
         <activity
             android:name="com.junior.muhammad.popularmovies2.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

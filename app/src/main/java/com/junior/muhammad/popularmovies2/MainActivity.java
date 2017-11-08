@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity
 
     int returnValue;
 
+    private GridLayoutManager layoutManager;
+
     /**
      * Loader call back response of instantiating the AsyncTaskLoader to load the movies ArrayList
      * from the internet and then updating the UI
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
             };
+
     private void extractFetchedMovies(ArrayList<Movie> movies) {
         //check if the ArrayList not null and if it's not pass it to the adapter and show the data
         if (movies != null && !movies.isEmpty()) {
@@ -133,6 +137,7 @@ public class MainActivity extends AppCompatActivity
                     adapter = new MoviesAdapter(null, null, null);
                 }
             };
+
     private void extractFromCursor(Cursor data) {
 
         ArrayList<Movie> movies = new ArrayList<>();
@@ -177,18 +182,6 @@ public class MainActivity extends AppCompatActivity
         mFavoriteMovies = movies;
     }
 
-    /**
-     * Save the parcelable ArrayList of our object to be able to use it later in onCreate method
-     * @param outState is the Bundle will be saving our data
-     */
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //save the current list of movies before any orientation happens
-        outState.putParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES, mListOfMovies);
-
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -205,6 +198,36 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //save the current list of movies before any orientation happens
+        outState.putParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES, mListOfMovies);
+        //save the state of layout manager
+        outState.putParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mListOfMovies = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES);
+            mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
+            adapter = new MoviesAdapter(this, mListOfMovies, this);
+            recyclerView.setAdapter(adapter);
+
+            //restoring the state of layoutManager
+            Parcelable state = savedInstanceState.getParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT);
+            recyclerView.getLayoutManager().onRestoreInstanceState(state);
+        } else {
+            //check if there internet connection and show a toast to the user if not
+            initTheLoaderIfThereConnection();
+        }
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -216,29 +239,19 @@ public class MainActivity extends AppCompatActivity
 
         //recyclerView setup
         recyclerView.setHasFixedSize(true);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
 
-        //if the Bundle reference is not null get its content and restart the loader passing that bundle
-        if (savedInstanceState != null) {
-
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(Constants.BUNDLE_KEY,
-                    savedInstanceState.getParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES));
-
-            mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
-            adapter = new MoviesAdapter(this, mListOfMovies, this);
-            recyclerView.setAdapter(adapter);
-        } else {
-            //check if there internet connection and show a toast to the user if not
-            initTheLoaderIfThereConnection();
-        }
+//        initTheLoaderIfThereConnection();
 
         //init the favoriteLoader to start query the db data to find which movies are favorite
         getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
-        //setting the bottomBar library which will move between movies categories
-        settingListenerToNavigationTabs();
+
+        if (savedInstanceState == null) {
+            //setting the bottomBar library which will move between movies categories
+            settingListenerToNavigationTabs();
+        }
 
         //creating this ArrayList to not cause NullPointerException
         mFavoriteMovies = new ArrayList<>();
@@ -349,7 +362,7 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         //simply this is the returned movie id and assigning the member variable with the new value
-        if (resultCode == Activity.RESULT_OK && data != null ) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
             returnValue = Integer.parseInt(data.getStringExtra("movie_id"));
         }
     }
