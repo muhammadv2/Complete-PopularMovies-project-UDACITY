@@ -9,17 +9,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-condensed"
-        android:textSize="20sp"
+        android:textSize="@dimen/review_author_tv"
         android:textStyle="bold"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="@dimen/value_of_8dp"
+        android:layout_marginStart="@dimen/value_of_8dp"
         android:layout_marginBottom="4dp"/>
 
     <TextView
         android:id="@+id/tv_review_content"
         android:layout_width="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="@dimen/value_of_8dp"
+        android:layout_marginEnd="@dimen/value_of_8dp"
         android:layout_marginBottom="16dp"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-condensed"

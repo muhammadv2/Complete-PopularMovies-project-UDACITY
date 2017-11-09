@@ -191,8 +191,10 @@ public final class NetworkUtils {
                 String overview = singleMovieObject.optString(Constants.OVERVIEW_TAG);
                 String posterPath = singleMovieObject.optString(Constants.POSTER_PATH_TAG);
                 String movieId = singleMovieObject.optString(Constants.MOVIE_ID);
+                String backdrop = singleMovieObject.optString(Constants.MOVIE_BACKDROP);
 
-                movies.add(new Movie(originalTitle, userRating, releaseDate, overview, posterPath, movieId));
+                movies.add(new Movie
+                        (originalTitle, userRating, releaseDate, overview, posterPath, movieId, backdrop));
             }
 
         } catch (JSONException e) {

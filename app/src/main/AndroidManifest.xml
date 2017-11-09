@@ -14,26 +14,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.junior.muhammad.popularmovies2.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            >
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.junior.muhammad.popularmovies2.DetailsScreen"
-            android:label="@string/title_activity_details_screen"
-            android:parentActivityName="com.junior.muhammad.popularmovies2.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-        />
 
         <provider
             android:name=".data.MoviesContentProvider"
             android:authorities="com.junior.muhammad.popularmovies2"
             android:exported="false" />
+
+        <activity
+            android:name=".DetailsScreen"
+            android:label="@string/title_activity_details"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
     </application>
 
 </manifest>

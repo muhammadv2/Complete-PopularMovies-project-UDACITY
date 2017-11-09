@@ -1,3 +1,15 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="review_author_tv">20sp</dimen>
+    <dimen name="backdrop_height">248dp</dimen>
+    <dimen name="value_of_8dp">8dp</dimen>
+    <dimen name="poster_width">149dp</dimen>
+    <dimen name="poster_height">194dp</dimen>
+    <dimen name="value_of_24dp">24dp</dimen>
+    <dimen name="value_of_16dp">16dp</dimen>
+    <dimen name="tv_size_of_16sp">16sp</dimen>
+    <dimen name="original_title_text_size">20sp</dimen>
+    <dimen name="reviews_recycler_height">360dp</dimen>
 </resources>

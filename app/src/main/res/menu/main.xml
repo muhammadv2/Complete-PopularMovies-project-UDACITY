@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/popular_menu_button"
+        android:orderInCategory="100"
+        android:title="@string/title_most_popular" />
+    <item
+        android:id="@+id/rated_menu_button"
+        android:orderInCategory="101"
+        android:title="@string/title_top_rated" />
+
+    <item
+        android:id="@+id/fav_menu_button"
+        android:orderInCategory="102"
+        android:title="@string/title_favorite_movies" />
+
+</menu>

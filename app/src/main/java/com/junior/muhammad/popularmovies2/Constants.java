@@ -37,6 +37,7 @@ final public class Constants {
     public final static String VOTE_AVERAGE_TAG = "vote_average";
     public final static String RELEASE_DATE_TAG = "release_date";
     public final static String MOVIE_ID = "id";
+    public final static String MOVIE_BACKDROP = "backdrop_path";
     //Json for trailer
     public final static String TRAILER_NAME = "name";
     public final static String TRAILER_KEY = "key";
@@ -47,7 +48,8 @@ final public class Constants {
     //Bundle Key
     final static String BUNDLE_KEY_FOR_MOVIES = "movies_key";
     final static String BUNDLE_KEY_FOR_BOOLEAN = "boolean_key";
-    final static String BUNDLE_KEY = "movies_bundle";
+    final static String TAB_ID_KEY = "movies_bundle";
+    final static String LOADER_ID_KEY = "movies_bundle";
     final static String BUNDLE_KEY_FOR_LAYOUT = "layoutManagerState";
 
     //youtube related constants
@@ -55,5 +57,5 @@ final public class Constants {
     static final String BASE_URL_FOR_TRAILER_VIDEO = "https://www.youtube.com/watch?v=";
 
     //intent keys
-     static final int SECOND_ACTIVITY_REQUEST_CODE = 550;
+    static final int SECOND_ACTIVITY_REQUEST_CODE = 550;
 }

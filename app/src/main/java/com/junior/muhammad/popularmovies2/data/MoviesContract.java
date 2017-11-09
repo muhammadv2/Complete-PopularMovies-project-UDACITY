@@ -31,6 +31,7 @@ public class MoviesContract {
         public static final String COLUMN_OVERVIEW = "overview";
         public static final String COLUMN_POSTER_PATH = "poster_path";
         public static final String COLUMN_MOVIE_ID = "movieId";
+        public static final String COLUMN_BACKDROP_IMAGE = "backdrop";
 
     }
 }

@@ -11,7 +11,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "moviesDb.db";
 
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
 
     private static final String CREATE_TABLE_FAVORITE = "CREATE TABLE "
             + FavEntry.TABLE_NAME + "("
@@ -21,7 +21,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
             + FavEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL,"
             + FavEntry.COLUMN_OVERVIEW + " TEXT NOT NULL,"
             + FavEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL,"
-            + FavEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL"
+            + FavEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL,"
+            + FavEntry.COLUMN_BACKDROP_IMAGE + " TEXT NOT NULL"
             + ");";
 
     public MoviesDbHelper(Context context) {

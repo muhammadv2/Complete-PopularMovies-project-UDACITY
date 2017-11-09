@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -14,9 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.junior.muhammad.popularmovies2.adapters.ReviewsAdapter;
 import com.junior.muhammad.popularmovies2.adapters.TrailersAdapter;
@@ -41,12 +43,12 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     TextView mOriginalTitle;
     @BindView(R.id.tv_user_rating)
     TextView mUserRating;
-    @BindView(R.id.details_favorite_button)
-    ImageButton mFavoriteImageButton;
     @BindView(R.id.tv_overview)
     TextView mOverview;
     @BindView(R.id.tv_release_date)
     TextView mReleaseDate;
+    @BindView(R.id.backDrop_iv)
+    ImageView mBackdrop;
     @BindView(R.id.iv_details_activity_poster)
     ImageView mMoviePoster;
     @BindView(R.id.trailers_rv)
@@ -55,6 +57,8 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     RecyclerView reviewsRv;
     @BindView(R.id.tv_reviews_not_available)
     TextView reviewsNotAvailable;
+    @BindView(R.id.fab)
+    FloatingActionButton floatingActionButton;
 
     //our two adapter used in this activity
     TrailersAdapter trailersAdapter;
@@ -70,6 +74,8 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     private String mMovieId;
 
     private ArrayList<MovieTrailer> movieTrailers = new ArrayList<>();
+
+    private Toast toast;
 
     /**
      * Loader call back response of instantiating the AsyncTaskLoader to load the trailers ArrayList
@@ -120,8 +126,11 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                     if (data != null && data.size() > 0) {
 
                         reviewsNotAvailable.setVisibility(View.INVISIBLE);
-                        updateReviewsAdapter(data);
+                        reviewsAdapter = new ReviewsAdapter(data);
+                        reviewsRv.setAdapter(reviewsAdapter);
 
+                    } else {
+                        reviewsRv.setVisibility(View.INVISIBLE);
                     }
                 }
 
@@ -130,14 +139,6 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
                 }
             };
-
-    void updateReviewsAdapter(ArrayList<MovieReviews> data) {
-
-        reviewsAdapter = new ReviewsAdapter(data);
-        reviewsRv.setAdapter(reviewsAdapter);
-
-    }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -149,47 +150,38 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_details_screen);
+        setContentView(R.layout.activity_details);
 
         ButterKnife.bind(this);
 
         //setting up the recyclerView for the trailers
-        trailerRv.setHasFixedSize(true);
-        LinearLayoutManager trailersLm =
-                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        trailerRv.setLayoutManager(trailersLm);
+        setUpTrailerRecycler();
 
         //setting up the recyclerView for the reviews
-        reviewsRv.setHasFixedSize(true);
-        LinearLayoutManager reviewsLm =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        reviewsRv.setLayoutManager(reviewsLm);
+        setUpReviewsRecycler();
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        //instantiating the intent from the coming intent
         intent = getIntent();
-        //getting the movie object from the intent
         movie = intent.getParcelableExtra(Constants.MOVIE_OBJECT_TAG);
         mMovieId = movie.getMovieId();
-        //set all the views up
+
         extractIntentExtrasAndSetTheViews();
-        //handles the button response to favorite and un favorite movies
+
         favoriteMoviesButtonHandling();
 
-        //check if the saved instance is not null pass the saved boolean key to keep the boolean
-        //value when orientation changes
         if (savedInstanceState != null) {
             isFavorite = savedInstanceState.getBoolean("boolean_key", false);
         } else {
             isFavorite = intent.getBooleanExtra(Constants.IS_FAVORITE_TAG, false);
         }
 
-        //upon the boolean set image resource to recognize that the movie is favorite or not
         if (isFavorite) {
-            mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
+            floatingActionButton.setImageResource(R.drawable.favorite_button_selected);
 
         } else {
-            mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
+            floatingActionButton.setImageResource(R.drawable.favorite_button_not_selected);
         }
 
         //initialization our two loaders for trailers and reviews
@@ -197,21 +189,32 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         getSupportLoaderManager().initLoader(Constants.REVIEWS_LOADER, null, reviewsLoader);
 
         reviewsNotAvailable.setVisibility(View.VISIBLE);
+
+        handlingFabClicks();
     }
 
-    /**
-     * method response to insert or delete the current movie from database upon user clicks
-     */
-    private void favoriteMoviesButtonHandling() {
+    private void setUpReviewsRecycler() {
+        reviewsRv.setHasFixedSize(true);
+        LinearLayoutManager reviewsLm =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        reviewsRv.setLayoutManager(reviewsLm);
+    }
 
-        mFavoriteImageButton.setOnClickListener(new View.OnClickListener() {
+    private void setUpTrailerRecycler() {
+        trailerRv.setHasFixedSize(true);
+        LinearLayoutManager trailersLm =
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        trailerRv.setLayoutManager(trailersLm);
+    }
+
+    private void handlingFabClicks() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
 
-                //if statement to find if the movie is already in favorite or not
                 if (isFavorite) {
                     //if the movie is favorite set the other image resource when user clicks
-                    mFavoriteImageButton.setImageResource(R.drawable.favorite_button_not_selected);
+                    floatingActionButton.setImageResource(R.drawable.favorite_button_not_selected);
 
                     //set up the uri to be passed to delete method
                     String stringId = movie.getMovieId();
@@ -225,12 +228,19 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
                     //set the boolean to be false
                     isFavorite = false;
+
+                    String movieName = movie.getTitle() + " ";
+
+
+                    if (toast != null)
+                        toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(),
+                            movieName + getString(R.string.movie_removed), Toast.LENGTH_LONG);
+                    toast.show();
                 } else {
 
-                    //if the movie is not favorite then set the image to tell that its now favorite
-                    mFavoriteImageButton.setImageResource(R.drawable.favorite_button_selected);
+                    floatingActionButton.setImageResource(R.drawable.favorite_button_selected);
 
-                    //creating a content values putting all the data within every column
                     ContentValues cv = new ContentValues();
                     cv.put(MoviesContract.FavEntry.COLUMN_TITLE, movie.getTitle());
                     cv.put(MoviesContract.FavEntry.COLUMN_RATING, movie.getUserRating());
@@ -238,6 +248,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                     cv.put(MoviesContract.FavEntry.COLUMN_OVERVIEW, movie.getOverView());
                     cv.put(MoviesContract.FavEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
                     cv.put(MoviesContract.FavEntry.COLUMN_MOVIE_ID, movie.getMovieId());
+                    cv.put(MoviesContract.FavEntry.COLUMN_BACKDROP_IMAGE, movie.getBackDrop());
 
                     //insert method which takes a uri and the content resolver and return a uri
                     Uri insert = getContentResolver().insert(MoviesContract.FavEntry.CONTENT_URI, cv);
@@ -254,9 +265,32 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
                     Intent intent = new Intent();
                     intent.putExtra("movie_id", movie.getMovieId());
                     setResult(Activity.RESULT_OK, intent);
+
+                    String movieName = movie.getTitle() + " ";
+
+
+                    if (toast != null)
+                        toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(),
+                            movieName + getString(R.string.movie_added), Toast.LENGTH_LONG);
+                    toast.show();
                 }
             }
         });
+    }
+
+
+    /**
+     * method response to insert or delete the current movie from database upon user clicks
+     */
+    private void favoriteMoviesButtonHandling() {
+
+//        mFavoriteImageButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+
+        //if statement to find if the movie is already in favorite or not
+
 
     }
 
@@ -274,6 +308,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         mOverview.setText(movie.getOverView());
         mReleaseDate.setText(dateFormat(date));
         ImageUtils.bindImage(this, movie.getPosterPath(), mMoviePoster);
+        ImageUtils.bindImage(this, movie.getBackDrop(), mBackdrop);
     }
 
     /**
@@ -369,3 +404,4 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         }
     }
 }
+

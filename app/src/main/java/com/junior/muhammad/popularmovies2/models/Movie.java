@@ -14,10 +14,11 @@ public class Movie implements Parcelable {
     private final String overView;
     private final String posterPath;
     private final String movieId;
+    private final String backDrop;
 
 
     public Movie(String title, String userRating, String releaseDate, String overView,
-          String posterPath, String movieId) {
+                 String posterPath, String movieId, String backDrop) {
 
         this.title = title;
         this.userRating = userRating;
@@ -25,7 +26,7 @@ public class Movie implements Parcelable {
         this.overView = overView;
         this.posterPath = posterPath;
         this.movieId = movieId;
-
+        this.backDrop = backDrop;
     }
 
     private Movie(Parcel in) {
@@ -35,14 +36,20 @@ public class Movie implements Parcelable {
         overView = in.readString();
         posterPath = in.readString();
         movieId = in.readString();
+        backDrop = in.readString();
     }
 
     public String getTitle() {
         return title;
     }
 
+    public String getBackDrop() {
+        return backDrop;
+    }
+
     public String getUserRating() {
         return userRating;
+
     }
 
     public String getReleaseDate() {
@@ -88,5 +95,6 @@ public class Movie implements Parcelable {
         parcel.writeString(overView);
         parcel.writeString(posterPath);
         parcel.writeString(movieId);
+        parcel.writeString(backDrop);
     }
 }

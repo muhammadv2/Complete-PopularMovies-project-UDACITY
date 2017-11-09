@@ -8,13 +8,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -24,8 +26,6 @@ import com.junior.muhammad.popularmovies2.data.MoviesContract;
 import com.junior.muhammad.popularmovies2.loaders.FavoriteMoviesLoader;
 import com.junior.muhammad.popularmovies2.loaders.MovieAsyncTaskLoader;
 import com.junior.muhammad.popularmovies2.models.Movie;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabSelectListener;
 
 import java.util.ArrayList;
 
@@ -35,10 +35,9 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements MoviesAdapter.OnItemClickListener {
 
+    private static final String TAG = MainActivity.class.toString();
     private Context mContext;
 
-    @BindView(R.id.navigation)
-    BottomBar bottomBar;
     @BindView(R.id.rv_movies)
     RecyclerView recyclerView;
     @BindView(R.id.pb_searching)
@@ -58,11 +57,10 @@ public class MainActivity extends AppCompatActivity
 
     private MoviesAdapter adapter;
 
-    private int mTabId;
-
     int returnValue;
 
-    private GridLayoutManager layoutManager;
+    int tabId;
+
 
     /**
      * Loader call back response of instantiating the AsyncTaskLoader to load the movies ArrayList
@@ -99,12 +97,10 @@ public class MainActivity extends AppCompatActivity
 
     private void extractFetchedMovies(ArrayList<Movie> movies) {
         //check if the ArrayList not null and if it's not pass it to the adapter and show the data
-        if (movies != null && !movies.isEmpty()) {
-            mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
-            adapter = new MoviesAdapter(this, movies, this);
-            recyclerView.setAdapter(adapter);
-            mListOfMovies = movies; // then pass the list of most popular movies
-        }
+        mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
+        adapter = new MoviesAdapter(this, movies, this);
+        recyclerView.setAdapter(adapter);
+        mListOfMovies = movies; // then pass the list of most popular movies
     }
 
     /**
@@ -123,8 +119,8 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-                    //get the loader id
-                    loader_id = loader.getId();
+                    if (tabId == 3)
+                        loader_id = loader.getId();
 
                     //method to retrieve the data from the database using the returned cursor
                     // and updating the adapter with this data
@@ -154,6 +150,7 @@ public class MainActivity extends AppCompatActivity
         int overviewColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_OVERVIEW);
         int posterPathColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_POSTER_PATH);
         int idColumnIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_MOVIE_ID);
+        int backDropIndex = data.getColumnIndex(MoviesContract.FavEntry.COLUMN_BACKDROP_IMAGE);
 
         //while cursor still have rows get data associated with every row
         while (data.moveToNext()) {
@@ -164,17 +161,17 @@ public class MainActivity extends AppCompatActivity
             String overview = data.getString(overviewColumnIndex);
             String posterPath = data.getString(posterPathColumnIndex);
             String movieId = data.getString(idColumnIndex);
+            String backDropImage = data.getString(backDropIndex);
 
             //put everything in new movie object
-            movies.add(new Movie(title, rating, date, overview, posterPath, movieId));
+            movies.add(new Movie(title, rating, date, overview, posterPath, movieId, backDropImage));
         }
 
-        //instantiating the adapter with the new data and make set it on the RecyclerView
         adapter = new MoviesAdapter(this, movies, this);
 
         //only update the recycler view if the favorite tab is the selected and this to prevent
         //updating the adapter with favorite movies when init from onCreate
-        if (mTabId == 3)
+        if (tabId == 3)
             recyclerView.setAdapter(adapter);
 
         //updating the list that we pass to details activity intent
@@ -188,11 +185,12 @@ public class MainActivity extends AppCompatActivity
 
         //if statement to identify the current working loader to restart after activity get resumed
         if (loader_id == Constants.FAVORITES_LOADER) {
+
             //init the favorite loader here to void doing that in onCreate method which the two
             //loaders will be called init in the same time
             getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
         } else {
-            getSupportLoaderManager().restartLoader(Constants.MOVIES_LOADER, null, allMoviesLoader);
+            initTheLoaderIfThereConnection();
         }
 
     }
@@ -200,10 +198,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //save the current list of movies before any orientation happens
+
         outState.putParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES, mListOfMovies);
-        //save the state of layout manager
+
         outState.putParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
+
+        outState.putInt(Constants.TAB_ID_KEY, tabId);
+
+        outState.putInt(Constants.LOADER_ID_KEY, loader_id);
 
     }
 
@@ -211,20 +213,41 @@ public class MainActivity extends AppCompatActivity
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
+        Log.d(TAG, "onRestoreInstanceState() called with: savedInstanceState = [" + savedInstanceState + "]");
         if (savedInstanceState != null) {
+
             mListOfMovies = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES);
-            mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
-            adapter = new MoviesAdapter(this, mListOfMovies, this);
-            recyclerView.setAdapter(adapter);
+            loader_id = savedInstanceState.getInt(Constants.LOADER_ID_KEY);
+            tabId = savedInstanceState.getInt(Constants.TAB_ID_KEY);
 
-            //restoring the state of layoutManager
-            Parcelable state = savedInstanceState.getParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT);
-            recyclerView.getLayoutManager().onRestoreInstanceState(state);
-        } else {
-            //check if there internet connection and show a toast to the user if not
-            initTheLoaderIfThereConnection();
+            Log.d(TAG, "loader id is " + loader_id);
+            if (loader_id != Constants.FAVORITES_LOADER) {
+
+                mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
+                adapter = new MoviesAdapter(this, mListOfMovies, this);
+                recyclerView.setAdapter(adapter);
+
+                Log.d(TAG, "loader for all movies has been invoked");
+                //restoring the state of layoutManager
+
+                Parcelable state = savedInstanceState.getParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT);
+                recyclerView.getLayoutManager().onRestoreInstanceState(state);
+
+            } else if (loader_id == Constants.FAVORITES_LOADER) {
+
+                mProgressBar.setVisibility(View.INVISIBLE);
+                adapter = new MoviesAdapter(this, mListOfMovies, this);
+                recyclerView.setAdapter(adapter);
+
+                Parcelable state = savedInstanceState.getParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT);
+                recyclerView.getLayoutManager().onRestoreInstanceState(state);
+            }
         }
-
+//        } else {
+//            //check if there internet connection and show a toast to the user if not
+//            if (tabId != 3)
+//                initTheLoaderIfThereConnection();
+//        }
     }
 
     @Override
@@ -234,79 +257,66 @@ public class MainActivity extends AppCompatActivity
 
         mContext = getApplicationContext();
 
-        //binding the butterKnife library
         ButterKnife.bind(this);
 
         //recyclerView setup
         recyclerView.setHasFixedSize(true);
-        layoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
-
-//        initTheLoaderIfThereConnection();
 
         //init the favoriteLoader to start query the db data to find which movies are favorite
         getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
 
-        if (savedInstanceState == null) {
-            //setting the bottomBar library which will move between movies categories
-            settingListenerToNavigationTabs();
-        }
-
-        //creating this ArrayList to not cause NullPointerException
-        mFavoriteMovies = new ArrayList<>();
     }
 
-    private void settingListenerToNavigationTabs() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
-        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
-            @Override
-            public void onTabSelected(@IdRes int tabId) {
-                switch (tabId) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-                    case R.id.most_popular_id:
-                        //first check if the device online then restart the loader to query the new end point
-                        if (isOnline()) {
-                            //first set the howToSort String to most popular movies constant
-                            howToSort = Constants.MOST_POPULAR_MOVIES;
-                            //restart the loader method to fill the loader with new sort of movies
-                            restartAllMoviesLoader();
-                            Toast.makeText(mContext, R.string.most_popular_selected, Toast.LENGTH_SHORT).show();
-                        }
-                        break;
+        switch (item.getItemId()) {
 
-                    case R.id.top_rated_id:
-                        if (isOnline()) {
-                            //first set the howToSort String to top rated movies constant
-                            howToSort = Constants.TOP_RATED_MOVIES;
-                            //restart the loader method to fill the loader with new sort of movies
-                            restartAllMoviesLoader();
-                            Toast.makeText(mContext, R.string.top_rated_selected, Toast.LENGTH_SHORT).show();
-                        }
-                        break;
+            case R.id.popular_menu_button:
 
-                    case R.id.favorite_movies_id:
-
-                        //update the tabId variable every time this button is clicked
-                        mTabId = 3;
-                        mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible no need here
-
-                        //i used only init once and restart once but i dunno why it doesn't update
-                        //the adapter unless them used together
-                        getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
-                        getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
-
-                        Toast.makeText(mContext, R.string.favorite_selected, Toast.LENGTH_SHORT).show();
+                tabId = 1;
+                if (isOnline()) {
+                    howToSort = Constants.MOST_POPULAR_MOVIES;
+                    restartAllMoviesLoader();
+                    Toast.makeText(mContext, R.string.most_popular_selected, Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
-    }
+                break;
 
+            case R.id.rated_menu_button:
+                tabId = 2;
+                if (isOnline()) {
+                    howToSort = Constants.TOP_RATED_MOVIES;
+                    restartAllMoviesLoader();
+                    Toast.makeText(mContext, R.string.top_rated_selected, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.fav_menu_button:
+
+                tabId = 3;
+
+                mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible no need here
+
+                getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
+
+                Toast.makeText(mContext, R.string.favorite_selected, Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
 
     //Start of methods related to the loader
     private void initTheLoaderIfThereConnection() {
         if (isOnline()) {
-            //init of the loader obviously :D
+
             getSupportLoaderManager().initLoader(Constants.MOVIES_LOADER, null, allMoviesLoader);
         } else {
             Toast.makeText(this, R.string.internet_required, Toast.LENGTH_LONG).show();
