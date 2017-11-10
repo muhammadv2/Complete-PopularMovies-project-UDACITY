@@ -13,7 +13,7 @@
     <string name="title_favorite_movies">Favorites</string>
     <string name="trailer_video">trailer_video</string>
     <string name="do_yu_like_it">Do yu like it</string>
-    <string name="no_reviews_available">No reviews available for this movie :(</string>
+    <string name="no_reviews_available">No reviews available for this movie</string>
     <string name="backdrop_image">backdrop Image</string>
     <string name="title_activity_details">DetailsActivity</string>
     <string name="movie_added">has been added to your favorites</string>

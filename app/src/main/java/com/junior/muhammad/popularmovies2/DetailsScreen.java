@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -56,17 +57,16 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
     @BindView(R.id.reviews_rv)
     RecyclerView reviewsRv;
     @BindView(R.id.tv_reviews_not_available)
-    TextView reviewsNotAvailable;
+    TextView mReviewsNotAvailable;
+
     @BindView(R.id.fab)
     FloatingActionButton floatingActionButton;
 
-    //our two adapter used in this activity
     TrailersAdapter trailersAdapter;
     ReviewsAdapter reviewsAdapter;
 
     private Intent intent;
 
-    //boolean to indicate if the movie is already favorite or not
     private Boolean isFavorite;
 
     private Movie movie;
@@ -83,6 +83,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
      */
     final LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>> trailersLoader = new
             LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>>() {
+                @NonNull
                 @Override
                 public Loader<ArrayList<MovieTrailer>> onCreateLoader(int id, Bundle args) {
                     return new TrailersAsyncLoader(getApplicationContext(), mMovieId);
@@ -115,6 +116,7 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
      */
     final LoaderManager.LoaderCallbacks<ArrayList<MovieReviews>> reviewsLoader = new
             LoaderManager.LoaderCallbacks<ArrayList<MovieReviews>>() {
+                @NonNull
                 @Override
                 public Loader<ArrayList<MovieReviews>> onCreateLoader(int id, Bundle args) {
                     return new ReviewsAsyncLoader(getApplicationContext(), mMovieId);
@@ -125,11 +127,13 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
                     if (data != null && data.size() > 0) {
 
-                        reviewsNotAvailable.setVisibility(View.INVISIBLE);
+                        reviewsRv.setVisibility(View.VISIBLE);
                         reviewsAdapter = new ReviewsAdapter(data);
                         reviewsRv.setAdapter(reviewsAdapter);
+                        mReviewsNotAvailable.setVisibility(View.INVISIBLE);
 
                     } else {
+                        mReviewsNotAvailable.setVisibility(View.VISIBLE);
                         reviewsRv.setVisibility(View.INVISIBLE);
                     }
                 }
@@ -154,10 +158,8 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
 
         ButterKnife.bind(this);
 
-        //setting up the recyclerView for the trailers
         setUpTrailerRecycler();
 
-        //setting up the recyclerView for the reviews
         setUpReviewsRecycler();
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -168,8 +170,6 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         mMovieId = movie.getMovieId();
 
         extractIntentExtrasAndSetTheViews();
-
-        favoriteMoviesButtonHandling();
 
         if (savedInstanceState != null) {
             isFavorite = savedInstanceState.getBoolean("boolean_key", false);
@@ -187,8 +187,6 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         //initialization our two loaders for trailers and reviews
         getSupportLoaderManager().initLoader(Constants.TRAILERS_LOADER, null, trailersLoader);
         getSupportLoaderManager().initLoader(Constants.REVIEWS_LOADER, null, reviewsLoader);
-
-        reviewsNotAvailable.setVisibility(View.VISIBLE);
 
         handlingFabClicks();
     }
@@ -279,20 +277,6 @@ public class DetailsScreen extends AppCompatActivity implements TrailersAdapter.
         });
     }
 
-
-    /**
-     * method response to insert or delete the current movie from database upon user clicks
-     */
-    private void favoriteMoviesButtonHandling() {
-
-//        mFavoriteImageButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-
-        //if statement to find if the movie is already in favorite or not
-
-
-    }
 
     /**
      * help setting the data associated with Intent as extras to our views

@@ -14,7 +14,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -183,14 +182,9 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        //if statement to identify the current working loader to restart after activity get resumed
         if (loader_id == Constants.FAVORITES_LOADER) {
 
-            //init the favorite loader here to void doing that in onCreate method which the two
-            //loaders will be called init in the same time
             getSupportLoaderManager().restartLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
-        } else {
-            initTheLoaderIfThereConnection();
         }
 
     }
@@ -213,47 +207,28 @@ public class MainActivity extends AppCompatActivity
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        Log.d(TAG, "onRestoreInstanceState() called with: savedInstanceState = [" + savedInstanceState + "]");
         if (savedInstanceState != null) {
 
             mListOfMovies = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_KEY_FOR_MOVIES);
             loader_id = savedInstanceState.getInt(Constants.LOADER_ID_KEY);
             tabId = savedInstanceState.getInt(Constants.TAB_ID_KEY);
 
-            Log.d(TAG, "loader id is " + loader_id);
-            if (loader_id != Constants.FAVORITES_LOADER) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            adapter = new MoviesAdapter(this, mListOfMovies, this);
+            recyclerView.setAdapter(adapter);
 
-                mProgressBar.setVisibility(View.INVISIBLE); // make progressBar invisible after the data is loaded
-                adapter = new MoviesAdapter(this, mListOfMovies, this);
-                recyclerView.setAdapter(adapter);
+            Parcelable state = savedInstanceState.getParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT);
+            recyclerView.getLayoutManager().onRestoreInstanceState(state);
 
-                Log.d(TAG, "loader for all movies has been invoked");
-                //restoring the state of layoutManager
-
-                Parcelable state = savedInstanceState.getParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT);
-                recyclerView.getLayoutManager().onRestoreInstanceState(state);
-
-            } else if (loader_id == Constants.FAVORITES_LOADER) {
-
-                mProgressBar.setVisibility(View.INVISIBLE);
-                adapter = new MoviesAdapter(this, mListOfMovies, this);
-                recyclerView.setAdapter(adapter);
-
-                Parcelable state = savedInstanceState.getParcelable(Constants.BUNDLE_KEY_FOR_LAYOUT);
-                recyclerView.getLayoutManager().onRestoreInstanceState(state);
-            }
         }
-//        } else {
-//            //check if there internet connection and show a toast to the user if not
-//            if (tabId != 3)
-//                initTheLoaderIfThereConnection();
-//        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         mContext = getApplicationContext();
 
@@ -267,6 +242,9 @@ public class MainActivity extends AppCompatActivity
         //init the favoriteLoader to start query the db data to find which movies are favorite
         getSupportLoaderManager().initLoader(Constants.FAVORITES_LOADER, null, favoriteLoader);
 
+        if (tabId != 3) {
+            initTheLoaderIfThereConnection();
+        }
 
     }
 

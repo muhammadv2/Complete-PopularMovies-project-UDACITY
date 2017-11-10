@@ -8,8 +8,8 @@
         android:id="@+id/trailer_view"
         android:layout_width="240dp"
         android:layout_height="160dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="@dimen/value_of_8dp"
+        android:layout_marginStart="@dimen/value_of_8dp"
         android:contentDescription="@string/trailer_video"
         android:scaleType="centerCrop" />
 
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxWidth="240dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
 </LinearLayout>

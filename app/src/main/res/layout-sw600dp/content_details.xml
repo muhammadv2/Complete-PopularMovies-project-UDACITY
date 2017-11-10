@@ -18,11 +18,12 @@
             <ImageView
                 android:id="@+id/backDrop_iv"
                 android:layout_width="0dp"
-                android:layout_height="240dp"
+                android:layout_height="378dp"
                 android:contentDescription="@string/backdrop_image"
                 android:scaleType="centerCrop"
                 android:src="@drawable/backdrop"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

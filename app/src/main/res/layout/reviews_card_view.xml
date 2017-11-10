@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<LinearLayout android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/tv_review_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="@dimen/review_author_tv"
-        android:textStyle="bold"
-        android:layout_marginEnd="@dimen/value_of_8dp"
-        android:layout_marginStart="@dimen/value_of_8dp"
-        android:layout_marginBottom="4dp"/>
+        <TextView
+            android:id="@+id/tv_review_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="@dimen/value_of_8dp"
+            android:layout_marginStart="@dimen/value_of_8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="@dimen/review_author_tv"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tv_review_content"
-        android:layout_width="wrap_content"
-        android:layout_marginStart="@dimen/value_of_8dp"
-        android:layout_marginEnd="@dimen/value_of_8dp"
-        android:layout_marginBottom="16dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="16sp" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_review_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/value_of_16dp"
+            android:layout_marginEnd="@dimen/value_of_8dp"
+            android:layout_marginStart="@dimen/value_of_8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="@dimen/tv_size_of_16sp" />
+    </LinearLayout>
